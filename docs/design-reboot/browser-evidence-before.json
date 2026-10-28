@@ -1,0 +1,221 @@
+{
+  "method": "Independent Assessment B; bundled CLI source detector + own new Chromium context/page using installed @playwright/test. No native browser tool exposed.",
+  "views": [
+    {
+      "label": "workshop",
+      "url": "http://127.0.0.1:4318",
+      "inject": {
+        "success": false,
+        "error": "page.addScriptTag: Loading the script 'http://localhost:8400/detect.js' violates the following Content Security Policy directive: \"default-src 'self'\". Note that 'script-src-elem' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked."
+      },
+      "evidence": {
+        "title": "[Human] Assessment B",
+        "width": 1600,
+        "documentWidth": 1600,
+        "detectorScripts": [
+          "http://localhost:8400/detect.js"
+        ],
+        "detectorNodes": []
+      },
+      "console": [
+        {
+          "type": "error",
+          "text": "Loading the script 'http://localhost:8400/detect.js' violates the following Content Security Policy directive: \"default-src 'self'\". Note that 'script-src-elem' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked."
+        }
+      ]
+    },
+    {
+      "label": "cards",
+      "url": "http://127.0.0.1:4318/?preview=1&scenario=cards",
+      "inject": {
+        "success": false,
+        "error": "page.addScriptTag: Loading the script 'http://localhost:8400/detect.js' violates the following Content Security Policy directive: \"default-src 'self'\". Note that 'script-src-elem' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked."
+      },
+      "evidence": {
+        "title": "[Human] Assessment B",
+        "width": 1600,
+        "documentWidth": 1600,
+        "detectorScripts": [
+          "http://localhost:8400/detect.js"
+        ],
+        "detectorNodes": []
+      },
+      "console": [
+        {
+          "type": "error",
+          "text": "Loading the script 'http://localhost:8400/detect.js' violates the following Content Security Policy directive: \"default-src 'self'\". Note that 'script-src-elem' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked."
+        }
+      ]
+    },
+    {
+      "label": "form",
+      "url": "http://127.0.0.1:4318/?preview=1&scenario=form",
+      "inject": {
+        "success": false,
+        "error": "page.addScriptTag: Loading the script 'http://localhost:8400/detect.js' violates the following Content Security Policy directive: \"default-src 'self'\". Note that 'script-src-elem' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked."
+      },
+      "evidence": {
+        "title": "[Human] Assessment B",
+        "width": 1600,
+        "documentWidth": 1600,
+        "detectorScripts": [
+          "http://localhost:8400/detect.js"
+        ],
+        "detectorNodes": []
+      },
+      "console": [
+        {
+          "type": "error",
+          "text": "Loading the script 'http://localhost:8400/detect.js' violates the following Content Security Policy directive: \"default-src 'self'\". Note that 'script-src-elem' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked."
+        }
+      ]
+    }
+  ],
+  "browserErrors": [],
+  "console": [
+    {
+      "type": "error",
+      "text": " Note that 'script-src' was not explicitly set, so 'default-src' is used as a fallback."
+    },
+    {
+      "type": "error",
+      "text": "Executing inline script violates the following Content Security Policy directive 'default-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-6gIvyk/GmOsNDsO3qOo6NhStNj5V6iJZTLzu8rTYM4w='), or a nonce ('nonce-...') is required to enable inline execution. Note also that 'script-src' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked."
+    },
+    {
+      "type": "error",
+      "text": " Note that 'script-src' was not explicitly set, so 'default-src' is used as a fallback."
+    },
+    {
+      "type": "error",
+      "text": " Note that 'script-src' was not explicitly set, so 'default-src' is used as a fallback."
+    },
+    {
+      "type": "error",
+      "text": " Note that 'script-src' was not explicitly set, so 'default-src' is used as a fallback."
+    },
+    {
+      "type": "error",
+      "text": "Loading the script 'http://localhost:8400/detect.js' violates the following Content Security Policy directive: \"default-src 'self'\". Note that 'script-src-elem' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked."
+    },
+    {
+      "type": "error",
+      "text": " Note that 'script-src' was not explicitly set, so 'default-src' is used as a fallback."
+    },
+    {
+      "type": "error",
+      "text": "Loading the script 'http://localhost:8400/detect.js' violates the following Content Security Policy directive: \"default-src 'self'\". Note that 'script-src-elem' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked."
+    },
+    {
+      "type": "error",
+      "text": " Note that 'script-src' was not explicitly set, so 'default-src' is used as a fallback."
+    },
+    {
+      "type": "error",
+      "text": "Loading the script 'http://localhost:8400/detect.js' violates the following Content Security Policy directive: \"default-src 'self'\". Note that 'script-src-elem' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked."
+    },
+    {
+      "type": "error",
+      "text": " Note that 'script-src' was not explicitly set, so 'default-src' is used as a fallback."
+    },
+    {
+      "type": "error",
+      "text": " Note that 'script-src' was not explicitly set, so 'default-src' is used as a fallback."
+    }
+  ],
+  "liveServer": {
+    "started": true,
+    "raw": "{\"pid\":13473,\"port\":8400,\"token\":\"[ephemeral token omitted; server stopped]\"}\n",
+    "connection": {
+      "pid": 13473,
+      "port": 8400
+    },
+    "port": 8400,
+    "cleanup": "Stopped live server on port 8400.\n"
+  },
+  "preflight": {
+    "originalTitle": "DS-Studio · Atelier local",
+    "titleMutation": true,
+    "scriptTagAppended": true,
+    "inlineScriptExecuted": false
+  },
+  "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'self'; base-uri 'none'; form-action 'self'",
+  "keyboardFirstFocus": {
+    "tag": "A",
+    "text": "Aller aux tokens",
+    "outline": "rgb(167, 67, 43) solid 2px",
+    "boxShadow": "none"
+  },
+  "history": {
+    "opened": true,
+    "emptyMessage": true,
+    "escapeCloses": true
+  },
+  "emptySearch": {
+    "message": "0 résultat(s). La sélection courante reste accessible.",
+    "selectedToken": "color.brand"
+  },
+  "mobile": [
+    {
+      "panel": "agent",
+      "width": 320,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "activePanels": [
+        "agent-panel"
+      ],
+      "focusId": ""
+    },
+    {
+      "panel": "ds",
+      "width": 320,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "activePanels": [
+        "ds-panel"
+      ],
+      "focusId": ""
+    },
+    {
+      "panel": "mobile",
+      "width": 320,
+      "documentWidth": 320,
+      "bodyWidth": 320,
+      "activePanels": [
+        "mobile-panel"
+      ],
+      "focusId": ""
+    }
+  ],
+  "harnessFailures": [
+    {
+      "message": "locator.textContent: Error: strict mode violation: locator('.token-hint') resolved to 2 elements:\n    1) <p role=\"status\" class=\"token-hint\">0 résultat(s). La sélection courante reste access…</p> aka getByText('0 résultat(s). La sélection')\n    2) <p class=\"token-hint\">#RRGGBB · Rien n’est écrit avant validation.</p> aka getByText('#RRGGBB · Rien n’est écrit')\n\nCall log:\n\u001b[2m  - waiting for locator('.token-hint')\u001b[22m\n",
+      "stack": "locator.textContent: Error: strict mode violation: locator('.token-hint') resolved to 2 elements:\n    1) <p role=\"status\" class=\"token-hint\">0 résultat(s). La sélection courante reste access…</p> aka getByText('0 résultat(s). La sélection')\n    2) <p class=\"token-hint\">#RRGGBB · Rien n’est écrit avant validation.</p> aka getByText('#RRGGBB · Rien n’est écrit')\n\nCall log:\n\u001b[2m  - waiting for locator('.token-hint')\u001b[22m\n\n    at /tmp/ds-assessment-b.mjs:48:64"
+    },
+    {
+      "message": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Agent', exact: true })\u001b[22m\n",
+      "stack": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Agent', exact: true })\u001b[22m\n\n    at /tmp/ds-assessment-b-followup.mjs:14:112"
+    }
+  ],
+  "booking": {
+    "buttonChanges": true,
+    "status": "Inscription de démonstration, aucune donnée envoyée."
+  },
+  "navigation": {
+    "context": "Vos ateliers favoris apparaîtront ici."
+  },
+  "cardsMobileGeometry": {
+    "width": 320,
+    "documentWidth": 320
+  },
+  "form": {
+    "emptySubmitValidity": false,
+    "invalidFields": 3,
+    "successStatus": "Merci ! Démonstration locale, aucune inscription réelle."
+  },
+  "formMobileGeometry": {
+    "width": 320,
+    "documentWidth": 320
+  },
+  "browserVisibility": "Headless custom Playwright fallback; no native presentation/visibility API, no claim of user-visible Human tab.",
+  "followup": "All remaining checks completed after correcting two harness selectors: .token-hint[role=status] and panel button aria-controls. No product source edit."
+}

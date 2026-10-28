@@ -1,0 +1,4 @@
+
+> ds-studio@2.0.0 check
+> tsc --noEmit
+

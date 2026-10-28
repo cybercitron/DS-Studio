@@ -1,0 +1,6 @@
+
+> ds-studio@2.0.0 scan
+> node scripts/scan-public.mjs
+
+196 fichiers publiables contrôlés (suivis, nouveaux non ignorés et index existant). 0 alerte(s).
+Contrôle heuristique : compléter par une revue humaine avant publication.

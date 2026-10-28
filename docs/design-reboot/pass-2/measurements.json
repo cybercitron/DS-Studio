@@ -1,0 +1,78 @@
+{
+  "metrics": [
+    {
+      "width": 1920,
+      "height": 1080,
+      "docW": 1920,
+      "docH": 1080,
+      "bodyW": 1920,
+      "bodyH": 1080
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "docW": 1280,
+      "docH": 720,
+      "bodyW": 1280,
+      "bodyH": 720
+    },
+    {
+      "width": 1100,
+      "height": 700,
+      "docW": 1100,
+      "docH": 700,
+      "bodyW": 1100,
+      "bodyH": 700
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "docW": 1024,
+      "docH": 768,
+      "bodyW": 1024,
+      "bodyH": 768
+    },
+    {
+      "width": 700,
+      "height": 900,
+      "docW": 700,
+      "docH": 900,
+      "bodyW": 700,
+      "bodyH": 900
+    },
+    {
+      "width": 375,
+      "height": 812,
+      "docW": 375,
+      "docH": 812,
+      "bodyW": 375,
+      "bodyH": 812
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "docW": 320,
+      "docH": 568,
+      "bodyW": 320,
+      "bodyH": 568
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "docW": 844,
+      "docH": 390,
+      "bodyW": 844,
+      "bodyH": 390
+    },
+    {
+      "width": 720,
+      "height": 450,
+      "docW": 720,
+      "docH": 450,
+      "bodyW": 720,
+      "bodyH": 450
+    }
+  ],
+  "errors": [],
+  "chat": "Intercepted local fixture; no cloud request"
+}

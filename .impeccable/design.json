@@ -1,0 +1,375 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-27T09:42:14.155271+00:00",
+  "title": "Design System: DS-Studio",
+  "extensions": {
+    "colorMeta": {
+      "studio-accent": {
+        "role": "primary",
+        "displayName": "Iris d’action",
+        "tonalRamp": [
+          "oklch(0.150 0.0325 280.27)",
+          "oklch(0.260 0.0640 280.27)",
+          "oklch(0.370 0.0871 280.27)",
+          "oklch(0.490 0.0993 280.27)",
+          "oklch(0.610 0.0961 280.27)",
+          "oklch(0.730 0.0779 280.27)",
+          "oklch(0.850 0.0476 280.27)",
+          "oklch(0.950 0.0165 280.27)"
+        ]
+      },
+      "studio-accent-hover": {
+        "role": "primary",
+        "displayName": "Iris appuyé",
+        "tonalRamp": [
+          "oklch(0.150 0.0325 279.04)",
+          "oklch(0.260 0.0640 279.04)",
+          "oklch(0.370 0.0871 279.04)",
+          "oklch(0.490 0.0993 279.04)",
+          "oklch(0.610 0.0961 279.04)",
+          "oklch(0.730 0.0779 279.04)",
+          "oklch(0.850 0.0476 279.04)",
+          "oklch(0.950 0.0165 279.04)"
+        ]
+      },
+      "studio-selected": {
+        "role": "primary",
+        "displayName": "Lavande de sélection",
+        "tonalRamp": [
+          "oklch(0.150 0.0087 292.77)",
+          "oklch(0.260 0.0172 292.77)",
+          "oklch(0.370 0.0235 292.77)",
+          "oklch(0.490 0.0267 292.77)",
+          "oklch(0.610 0.0259 292.77)",
+          "oklch(0.730 0.0210 292.77)",
+          "oklch(0.850 0.0128 292.77)",
+          "oklch(0.950 0.0044 292.77)"
+        ]
+      },
+      "studio-ink": {
+        "role": "secondary",
+        "displayName": "Encre violette",
+        "tonalRamp": [
+          "oklch(0.150 0.0147 288.66)",
+          "oklch(0.260 0.0290 288.66)",
+          "oklch(0.370 0.0395 288.66)",
+          "oklch(0.490 0.0451 288.66)",
+          "oklch(0.610 0.0436 288.66)",
+          "oklch(0.730 0.0353 288.66)",
+          "oklch(0.850 0.0216 288.66)",
+          "oklch(0.950 0.0075 288.66)"
+        ]
+      },
+      "studio-bg": {
+        "role": "neutral",
+        "displayName": "Fond lavande grisé",
+        "tonalRamp": [
+          "oklch(0.150 0.0026 278.63)",
+          "oklch(0.260 0.0052 278.63)",
+          "oklch(0.370 0.0071 278.63)",
+          "oklch(0.490 0.0080 278.63)",
+          "oklch(0.610 0.0078 278.63)",
+          "oklch(0.730 0.0063 278.63)",
+          "oklch(0.850 0.0039 278.63)",
+          "oklch(0.950 0.0013 278.63)"
+        ]
+      },
+      "studio-surface": {
+        "role": "neutral",
+        "displayName": "Planche blanche",
+        "tonalRamp": [
+          "oklch(0.150 0.0000 89.88)",
+          "oklch(0.260 0.0000 89.88)",
+          "oklch(0.370 0.0000 89.88)",
+          "oklch(0.490 0.0000 89.88)",
+          "oklch(0.610 0.0000 89.88)",
+          "oklch(0.730 0.0000 89.88)",
+          "oklch(0.850 0.0000 89.88)",
+          "oklch(0.950 0.0000 89.88)"
+        ]
+      },
+      "studio-panel": {
+        "role": "neutral",
+        "displayName": "Lavande papier",
+        "tonalRamp": [
+          "oklch(0.150 0.0013 271.37)",
+          "oklch(0.260 0.0026 271.37)",
+          "oklch(0.370 0.0036 271.37)",
+          "oklch(0.490 0.0041 271.37)",
+          "oklch(0.610 0.0040 271.37)",
+          "oklch(0.730 0.0032 271.37)",
+          "oklch(0.850 0.0020 271.37)",
+          "oklch(0.950 0.0007 271.37)"
+        ]
+      },
+      "studio-text": {
+        "role": "neutral",
+        "displayName": "Texte graphite violet",
+        "tonalRamp": [
+          "oklch(0.150 0.0089 284.56)",
+          "oklch(0.260 0.0175 284.56)",
+          "oklch(0.370 0.0238 284.56)",
+          "oklch(0.490 0.0271 284.56)",
+          "oklch(0.610 0.0262 284.56)",
+          "oklch(0.730 0.0212 284.56)",
+          "oklch(0.850 0.0130 284.56)",
+          "oklch(0.950 0.0045 284.56)"
+        ]
+      },
+      "studio-muted": {
+        "role": "neutral",
+        "displayName": "Gris annoté",
+        "tonalRamp": [
+          "oklch(0.150 0.0082 279.82)",
+          "oklch(0.260 0.0162 279.82)",
+          "oklch(0.370 0.0221 279.82)",
+          "oklch(0.490 0.0252 279.82)",
+          "oklch(0.610 0.0243 279.82)",
+          "oklch(0.730 0.0197 279.82)",
+          "oklch(0.850 0.0121 279.82)",
+          "oklch(0.950 0.0042 279.82)"
+        ]
+      },
+      "studio-line": {
+        "role": "neutral",
+        "displayName": "Filet de structure",
+        "tonalRamp": [
+          "oklch(0.150 0.0045 277.05)",
+          "oklch(0.260 0.0088 277.05)",
+          "oklch(0.370 0.0120 277.05)",
+          "oklch(0.490 0.0137 277.05)",
+          "oklch(0.610 0.0132 277.05)",
+          "oklch(0.730 0.0107 277.05)",
+          "oklch(0.850 0.0065 277.05)",
+          "oklch(0.950 0.0023 277.05)"
+        ]
+      },
+      "studio-control-line": {
+        "role": "neutral",
+        "displayName": "Contour de commande",
+        "tonalRamp": [
+          "oklch(0.150 0.0082 280.33)",
+          "oklch(0.260 0.0162 280.33)",
+          "oklch(0.370 0.0221 280.33)",
+          "oklch(0.490 0.0252 280.33)",
+          "oklch(0.610 0.0243 280.33)",
+          "oklch(0.730 0.0197 280.33)",
+          "oklch(0.850 0.0121 280.33)",
+          "oklch(0.950 0.0042 280.33)"
+        ]
+      },
+      "studio-error": {
+        "role": "secondary",
+        "displayName": "Framboise d’erreur",
+        "tonalRamp": [
+          "oklch(0.150 0.0325 13.05)",
+          "oklch(0.260 0.0640 13.05)",
+          "oklch(0.370 0.0871 13.05)",
+          "oklch(0.490 0.0993 13.05)",
+          "oklch(0.610 0.0961 13.05)",
+          "oklch(0.730 0.0779 13.05)",
+          "oklch(0.850 0.0476 13.05)",
+          "oklch(0.950 0.0165 13.05)"
+        ]
+      },
+      "studio-notice": {
+        "role": "secondary",
+        "displayName": "Vert de confirmation",
+        "tonalRamp": [
+          "oklch(0.150 0.0257 159.53)",
+          "oklch(0.260 0.0506 159.53)",
+          "oklch(0.370 0.0689 159.53)",
+          "oklch(0.490 0.0785 159.53)",
+          "oklch(0.610 0.0759 159.53)",
+          "oklch(0.730 0.0616 159.53)",
+          "oklch(0.850 0.0376 159.53)",
+          "oklch(0.950 0.0130 159.53)"
+        ]
+      },
+      "studio-control-hover": {
+        "role": "neutral",
+        "displayName": "Contour appuyé",
+        "tonalRamp": [
+          "oklch(0.150 0.008 282)",
+          "oklch(0.260 0.018 282)",
+          "oklch(0.370 0.027 282)",
+          "oklch(0.490 0.033 282)",
+          "oklch(0.610 0.032 282)",
+          "oklch(0.730 0.026 282)",
+          "oklch(0.850 0.016 282)",
+          "oklch(0.950 0.006 282)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "headline",
+        "purpose": "Titres de dialogues."
+      },
+      "title": {
+        "displayName": "title",
+        "purpose": "Titre du document dans le canevas."
+      },
+      "panel-title": {
+        "displayName": "panel-title",
+        "purpose": "En-têtes de panneaux."
+      },
+      "body": {
+        "displayName": "body",
+        "purpose": "Texte courant du chrome."
+      },
+      "control": {
+        "displayName": "control",
+        "purpose": "Commandes du chrome."
+      },
+      "label": {
+        "displayName": "label",
+        "purpose": "Annotations et libellés compacts."
+      },
+      "value": {
+        "displayName": "value",
+        "purpose": "Clés et valeurs techniques."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "studio-color-transition",
+        "value": "background-color 160ms ease-out, color 160ms ease-out",
+        "purpose": "États de commandes ; supprimé avec prefers-reduced-motion: reduce."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "studio-wide",
+        "value": "1800px"
+      },
+      {
+        "name": "studio-compact-desktop-max",
+        "value": "1199px"
+      },
+      {
+        "name": "studio-panels-max",
+        "value": "1099px"
+      },
+      {
+        "name": "studio-narrow-max",
+        "value": "599px"
+      },
+      {
+        "name": "studio-short-height-max",
+        "value": "600px"
+      },
+      {
+        "name": "catalogue-container-min",
+        "value": "600px"
+      },
+      {
+        "name": "sample-scenario-min",
+        "value": "700px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Action principale",
+      "kind": "button",
+      "description": "Commande du chrome ; distincte du bouton éditable de Lisière.",
+      "html": "<button class=\"ds-studio-primary\">Proposer</button>",
+      "css": ".ds-studio-primary{font:500 13px/1.5 Geist,sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:34px;padding:6px 10px;border:1px solid var(--studio-line,#dddfe9);border-radius:var(--studio-radius,6px);cursor:pointer;transition:background-color 160ms ease-out,color 160ms ease-out;background:var(--studio-accent,#5145c9);color:var(--studio-surface,#fff);border-color:transparent}.ds-studio-primary:hover{background:var(--studio-accent-hover,#4035af)}.ds-studio-primary:active{background:#342991}.ds-studio-primary:focus-visible{outline:2px solid var(--studio-accent,#5145c9);outline-offset:2px;}.ds-studio-primary:disabled{opacity:.5;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-studio-primary{transition:none}}",
+      "refersTo": "button-primary"
+    },
+    {
+      "name": "Action secondaire",
+      "kind": "button",
+      "description": "Commande neutre sur surface claire.",
+      "html": "<button class=\"ds-studio-secondary\">Annuler</button>",
+      "css": ".ds-studio-secondary{font:500 13px/1.5 Geist,sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:34px;padding:6px 10px;border:1px solid var(--studio-line,#dddfe9);border-radius:var(--studio-radius,6px);cursor:pointer;transition:background-color 160ms ease-out,color 160ms ease-out;background:var(--studio-surface,#fff);color:var(--studio-text,#292938)}.ds-studio-secondary:hover{background:#f0eff8}.ds-studio-secondary:active{background:#e5e2f7}.ds-studio-secondary:focus-visible{outline:2px solid var(--studio-accent,#5145c9);outline-offset:2px;}.ds-studio-secondary:disabled{opacity:.5;cursor:not-allowed}@media(prefers-reduced-motion:reduce){.ds-studio-secondary{transition:none}}",
+      "refersTo": "button-secondary"
+    },
+    {
+      "name": "Commande de barre",
+      "kind": "button",
+      "description": "Commande discrète sur encre violette.",
+      "html": "<div class=\"ds-studio-bar\"><button class=\"ds-studio-ghost\">Historique</button></div>",
+      "css": ".ds-studio-bar{background:var(--studio-ink,#29263f);padding:8px 16px}.ds-studio-ghost{font:500 13px/1.5 Geist,sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:34px;padding:6px 10px;border:1px solid var(--studio-line,#dddfe9);border-radius:var(--studio-radius,6px);cursor:pointer;transition:background-color 160ms ease-out,color 160ms ease-out;background:transparent;border-color:transparent;color:#eae7f6;font-size:12px}.ds-studio-ghost:hover,.ds-studio-ghost:active{background:#423c5a}.ds-studio-ghost:focus-visible{outline:2px solid #c9c0ff;outline-offset:2px}@media(prefers-reduced-motion:reduce){.ds-studio-ghost{transition:none}}"
+    },
+    {
+      "name": "Champ de propriété",
+      "kind": "input",
+      "description": "Valeur technique en monospace, contour de commande et focus commun.",
+      "html": "<label class=\"ds-studio-field\">Valeur<input class=\"ds-studio-input\" value=\"#5145c9\" aria-label=\"Valeur du token\"></label>",
+      "css": ".ds-studio-field{display:flex;flex-direction:column;gap:6px;font:12px/1.5 Geist,sans-serif;color:var(--studio-muted,#636575)}.ds-studio-input{min-width:0;min-height:36px;padding:7px 10px;border:1px solid var(--studio-control-line,#8a8c9d);border-radius:var(--studio-radius,6px);background:var(--studio-surface,#fff);color:var(--studio-text,#292938);caret-color:var(--studio-accent,#5145c9);font:13px/1.5 ui-monospace,monospace}.ds-studio-input:hover{border-color:var(--studio-control-hover,#72738a)}.ds-studio-input:focus-visible{outline:2px solid var(--studio-accent,#5145c9);outline-offset:2px;}",
+      "refersTo": "input"
+    },
+    {
+      "name": "Onglets du canevas",
+      "kind": "nav",
+      "description": "Destination active par couleur et soulignement.",
+      "html": "<nav class=\"ds-studio-tabs\" aria-label=\"Vue du canevas\"><button aria-pressed=\"true\">Composants</button><button aria-pressed=\"false\">Aperçu</button></nav>",
+      "css": ".ds-studio-tabs{display:flex;gap:4px;height:46px;background:var(--studio-surface,#fff);border-bottom:1px solid var(--studio-line,#dddfe9)}.ds-studio-tabs button{font:500 13px/1.5 Geist,sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:34px;padding:6px 10px;border:1px solid var(--studio-line,#dddfe9);border-radius:var(--studio-radius,6px);cursor:pointer;transition:background-color 160ms ease-out,color 160ms ease-out;position:relative;border:0;border-radius:0;background:transparent;padding:0 12px;font-size:12px;color:var(--studio-muted,#636575)}.ds-studio-tabs button[aria-pressed=true]{background:#f8f7fe;color:var(--studio-accent,#5145c9)}.ds-studio-tabs button[aria-pressed=true]::after{content:\"\";position:absolute;height:2px;background:var(--studio-accent,#5145c9);inset:auto 12px 0}.ds-studio-tabs button:hover{background:#f0eff8}.ds-studio-tabs button:focus-visible{outline:2px solid var(--studio-accent,#5145c9);outline-offset:2px;}@media(prefers-reduced-motion:reduce){.ds-studio-tabs button{transition:none}}"
+    },
+    {
+      "name": "Token sélectionné",
+      "kind": "custom",
+      "description": "Nom sémantique, valeur tabulaire et échantillon dans une ligne compacte.",
+      "html": "<button class=\"ds-studio-token\" aria-pressed=\"true\"><span class=\"ds-studio-swatch\"></span><span>brand</span><code>#3154C4</code></button>",
+      "css": ".ds-studio-token{font:500 13px/1.5 Geist,sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:34px;padding:6px 10px;border:1px solid var(--studio-line,#dddfe9);border-radius:var(--studio-radius,6px);cursor:pointer;transition:background-color 160ms ease-out,color 160ms ease-out;width:100%;justify-content:flex-start;min-height:32px;padding:5px 8px;border:0;border-radius:4px;background:var(--studio-selected,#eeebff);font-size:12px;font-weight:600;color:#4435a2}.ds-studio-token code{margin-inline-start:auto;font:400 12px/1.5 ui-monospace,monospace;font-variant-numeric:tabular-nums;color:var(--studio-muted,#636575)}.ds-studio-swatch{width:14px;height:14px;background:#3154c4;border:1px solid #0002;border-radius:3px}.ds-studio-token:hover{background:var(--studio-selected,#eeebff)}.ds-studio-token:focus-visible{outline:2px solid var(--studio-accent,#5145c9);outline-offset:2px;}@media(prefers-reduced-motion:reduce){.ds-studio-token{transition:none}}",
+      "refersTo": "token-row-selected"
+    },
+    {
+      "name": "Compositeur",
+      "kind": "card",
+      "description": "Conteneur fonctionnel, pas une carte décorative.",
+      "html": "<div class=\"ds-studio-composer\"><textarea aria-label=\"Message\" placeholder=\"Votre demande…\"></textarea><button>Envoyer</button></div>",
+      "css": ".ds-studio-composer{padding:12px;border:1px solid var(--studio-control-line,#8a8c9d);border-radius:8px;background:var(--studio-surface,#fff)}.ds-studio-composer textarea{display:block;width:100%;min-height:72px;border:0;resize:vertical;padding:6px 0;font:14px/1.5 Geist,sans-serif;color:var(--studio-text,#292938);background:var(--studio-surface,#fff)}.ds-studio-composer button{font:500 13px/1.5 Geist,sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:34px;padding:6px 10px;border:1px solid var(--studio-line,#dddfe9);border-radius:var(--studio-radius,6px);cursor:pointer;transition:background-color 160ms ease-out,color 160ms ease-out;display:block;margin-inline-start:auto;background:var(--studio-accent,#5145c9);color:white}.ds-studio-composer button:hover{background:var(--studio-accent-hover,#4035af)}.ds-studio-composer textarea:focus-visible,.ds-studio-composer button:focus-visible{outline:2px solid var(--studio-accent,#5145c9);outline-offset:2px;}@media(prefers-reduced-motion:reduce){.ds-studio-composer button{transition:none}}",
+      "refersTo": "composer"
+    },
+    {
+      "name": "Badge témoin Lisière",
+      "kind": "chip",
+      "description": "Composant du système édité : valeurs de seed uniquement en repli, jamais tokens du chrome.",
+      "html": "<span class=\"ds-sample-badge\">6 places disponibles</span>",
+      "css": ".ds-sample-badge{display:inline-block;border:1px solid var(--color-border,#BCC5D6);border-radius:20px;padding:4px 8px;font:10px/1.5 var(--font-family,system-ui);color:var(--color-brand,#3154C4);background:var(--color-surface,#fff)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Studio Specimen",
+    "overview": "Studio Specimen donne à l'atelier la précision d'un spécimen de fonderie, sans transformer le logiciel en affiche. L'encre violette cadre l'application ; la lavande claire sépare les surfaces de travail et l'iris désigne l'action ou la sélection. La densité reste celle d'un outil : titres modestes, valeurs alignées et commandes proches de l'objet.\n\nLe chrome de DS-Studio et le système édité sont deux domaines visuels indépendants. Les tokens ci-dessus décrivent uniquement le chrome livré dans `app/client/styles.css`. Les composants Lisière prennent leurs couleurs, leur police et leurs dimensions dans les tokens de l'étudiant ; leur bleu initial et leur police système ne deviennent pas l'identité de DS-Studio. La comparaison avant/après fait voir une proposition sans l'appliquer.",
+    "keyCharacteristics": [
+      "Encre violette, lavande pâle et planche blanche.",
+      "Geist locale pour l’interface ; monospace pour les clés et valeurs.",
+      "Surfaces jointives, contours utiles et profondeur tonale.",
+      "Spécimens réels ; aucune image décorative livrée."
+    ],
+    "rules": [
+      {
+        "name": "The Two Systems Rule",
+        "body": "Les variables du chrome restent indépendantes des tokens éditables ; une modification du système de l'étudiant ne recolore pas les commandes de l'atelier.",
+        "section": "colors"
+      },
+      {
+        "name": "The Operational Type Rule",
+        "body": "Le texte de travail reste en casse naturelle ; la hiérarchie vient du poids, de la taille et de l'espace, pas d'un surtitre décoratif.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tonal Depth Rule",
+        "body": "Les panneaux restent plats. La distinction entre fond, surface, sélection et dialogue ne dépend pas d'une ombre ajoutée.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** utiliser les variables du chrome pour les commandes et les tokens éditables seulement dans le système observé.",
+      "**Do** garder le focus visible et les contours de champs distincts des séparateurs structurels.",
+      "**Do** conserver les contenus et brouillons quand un panneau se replie ou change de destination.",
+      "**Do** montrer une proposition avec les vrais composants avant toute validation."
+    ],
+    "donts": [
+      "**Don't** copier la palette initiale de Lisière dans le chrome de DS-Studio.",
+      "**Don't** ajouter de surtitres décoratifs, de glyphes utilisés comme icônes ou d'illustrations SVG.",
+      "**Don't** inventer une intégration connectée ou transformer une proposition en modification enregistrée.",
+      "**Don't** ajouter des ombres de cartes ou un défilement global à cette interface plein écran."
+    ]
+  }
+}

@@ -1,0 +1,202 @@
+{
+  "stats": {
+    "startTime": "2026-10-27T09:40:19.169Z",
+    "duration": 25158.308,
+    "expected": 19,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "tests": [
+    {
+      "name": "boucle centrale réelle : diff, validation, propagation, recharge, annulation sélective",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 2856
+        }
+      ]
+    },
+    {
+      "name": "largeurs réelles, interactions, formulaire et desktop responsive",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 1255
+        }
+      ]
+    },
+    {
+      "name": "entrée couleur invalide sans mutation et clavier du diff",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 846
+        }
+      ]
+    },
+    {
+      "name": "export navigateur, import valide avec diff, fichier invalide sans écriture",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 878
+        }
+      ]
+    },
+    {
+      "name": "V2 : contraste proposé immédiat sans modifier les composants enregistrés",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 340
+        }
+      ]
+    },
+    {
+      "name": "V2 : brief privé persistant, indépendant du mode IA",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 575
+        }
+      ]
+    },
+    {
+      "name": "V2 : recherche, brouillon récupéré après recharge et abandon sans écriture",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 607
+        }
+      ]
+    },
+    {
+      "name": "V2 : conflit multi-onglets visible dans le diff, aucune perte de données",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 1175
+        }
+      ]
+    },
+    {
+      "name": "V2 : capacité de session périmée simulée sans rejeu ambigu",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 691
+        }
+      ]
+    },
+    {
+      "name": "V2 : clavier, mobile 375 px et absence de stockage navigateur",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 411
+        }
+      ]
+    },
+    {
+      "name": "fenêtre entière, sans scroll global : desktop, tablette, téléphone et paysage",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 2511
+        }
+      ]
+    },
+    {
+      "name": "scroll strictement local et viewport réel : largeur desktop accessible sans déplacer la page",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 937
+        }
+      ]
+    },
+    {
+      "name": "petit écran : trois panneaux accessibles, brouillon conservé et historique modal au clavier",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 1742
+        }
+      ]
+    },
+    {
+      "name": "composants partagés : focus, hover, désactivé et validation native du formulaire",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 1586
+        }
+      ]
+    },
+    {
+      "name": "canevas dominant : replier l’agent et agrandir conserve les états interactifs",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 742
+        }
+      ]
+    },
+    {
+      "name": "fenêtre basse : inventaire, propriétés et refus restent accessibles par scroll local",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 2076
+        }
+      ]
+    },
+    {
+      "name": "agent : conversation synthétique clairement isolée, erreur et reprise sans mutation",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 692
+        }
+      ]
+    },
+    {
+      "name": "contrastes du chrome : texte et contours nécessaires à l’identification des champs",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 1017
+        }
+      ]
+    },
+    {
+      "name": "zoom navigateur réel 100–200 %, sans zoom CSS ni simple redimensionnement du viewport",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 1534
+        }
+      ]
+    }
+  ]
+}

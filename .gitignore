@@ -1,0 +1,34 @@
+node_modules/
+dist/
+.ds-studio/
+.env
+.env.*
+!.env.example
+auth.json
+*credentials*
+*.pem
+*.key
+*.p12
+*.log
+*.tmp
+test-results/
+playwright-report/
+coverage/
+.codex/
+.claude/
+.gemini/
+workspace/private/
+workspace/exports/
+.DS_Store
+Thumbs.db
+
+# Suivi de reprise local, non destiné à la distribution.
+/PROGRESS.md
+
+# Installation locale officielle, reproductible via docs/design-reboot/INSTALLATION.md.
+# Ne pas versionner le moteur tiers ni ses données de catalogue dans le produit.
+/.agents/skills/impeccable/
+/.impeccable/*
+!/.impeccable/config.json
+!/.impeccable/design.json
+!/.impeccable/surfaces/

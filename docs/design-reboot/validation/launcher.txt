@@ -1,0 +1,147 @@
+
+> ds-studio@2.0.0 test:launcher
+> node --test tests/launcher.test.mjs
+
+TAP version 13
+# Subtest: Linux : un ouvreur persistant ne bloque pas le lanceur
+ok 1 - Linux : un ouvreur persistant ne bloque pas le lanceur
+  ---
+  duration_ms: 1669.415513
+  type: 'test'
+  ...
+# Subtest: Launcher : préparation et cycle complet sur de vrais processus isolés
+    # Subtest: premier double lancement concurrent, sans dépendances et sans installation implicite
+    ok 1 - premier double lancement concurrent, sans dépendances et sans installation implicite
+      ---
+      duration_ms: 376.722846
+      type: 'test'
+      ...
+    # Subtest: frontière HTTP : pas de mutation sans jeton ou depuis une origine externe
+    ok 2 - frontière HTTP : pas de mutation sans jeton ou depuis une origine externe
+      ---
+      duration_ms: 18.014669
+      type: 'test'
+      ...
+    # Subtest: annulation graphique de l’installation : aucun téléchargement
+    ok 3 - annulation graphique de l’installation : aucun téléchargement
+      ---
+      duration_ms: 636.024639
+      type: 'test'
+      ...
+    # Subtest: npm ci et compilation réels après confirmation seulement
+    ok 4 - npm ci et compilation réels après confirmation seulement
+      ---
+      duration_ms: 2656.225673
+      type: 'test'
+      ...
+    # Subtest: panneau graphique, démarrer et ouvrir
+    ok 5 - panneau graphique, démarrer et ouvrir
+      ---
+      duration_ms: 1367.673431
+      type: 'test'
+      ...
+    # Subtest: installation refusée sur serveur actif, erreur visible et données inchangées
+    ok 6 - installation refusée sur serveur actif, erreur visible et données inchangées
+      ---
+      duration_ms: 134.272248
+      type: 'test'
+      ...
+    # Subtest: données modifiées réellement, arrêt propre et redémarrage sans changer un octet
+    ok 7 - données modifiées réellement, arrêt propre et redémarrage sans changer un octet
+      ---
+      duration_ms: 1069.770474
+      type: 'test'
+      ...
+    # Subtest: onglet conservé pendant un vrai redémarrage : session renouvelée, diff sans écriture
+    ok 8 - onglet conservé pendant un vrai redémarrage : session renouvelée, diff sans écriture
+      ---
+      duration_ms: 1128.096946
+      type: 'test'
+      ...
+    # Subtest: plusieurs serveurs concurrents, même données et ports différents : tous refusés
+    ok 9 - plusieurs serveurs concurrents, même données et ports différents : tous refusés
+      ---
+      duration_ms: 461.198533
+      type: 'test'
+      ...
+    # Subtest: crash SIGKILL, verrou abandonné récupéré automatiquement et état préservé
+    ok 10 - crash SIGKILL, verrou abandonné récupéré automatiquement et état préservé
+      ---
+      duration_ms: 419.699788
+      type: 'test'
+      ...
+    # Subtest: crash du panneau seul : nouveau panneau, même serveur contrôlable
+    ok 11 - crash du panneau seul : nouveau panneau, même serveur contrôlable
+      ---
+      duration_ms: 741.680101
+      type: 'test'
+      ...
+    # Subtest: port application occupé : erreur claire, occupant et données préservés, reprise possible
+    ok 12 - port application occupé : erreur claire, occupant et données préservés, reprise possible
+      ---
+      duration_ms: 972.111175
+      type: 'test'
+      ...
+    # Subtest: PID réutilisé / processus non DS-Studio : aucun signal, verrou conservé
+    ok 13 - PID réutilisé / processus non DS-Studio : aucun signal, verrou conservé
+      ---
+      duration_ms: 651.81702
+      type: 'test'
+      ...
+    # Subtest: verrou historique PID mort, puis lancement terminal historique contrôlable
+    ok 14 - verrou historique PID mort, puis lancement terminal historique contrôlable
+      ---
+      duration_ms: 649.059504
+      type: 'test'
+      ...
+    # Subtest: état corrompu : refus sans écrasement ni remise à zéro
+    ok 15 - état corrompu : refus sans écrasement ni remise à zéro
+      ---
+      duration_ms: 318.31725
+      type: 'test'
+      ...
+    # Subtest: restauration guidée, confirmation et original conservé
+    ok 16 - restauration guidée, confirmation et original conservé
+      ---
+      duration_ms: 647.487602
+      type: 'test'
+      ...
+    # Subtest: verrou mal formé ou symbolique : refus sans suppression ni écriture
+    ok 17 - verrou mal formé ou symbolique : refus sans suppression ni écriture
+      ---
+      duration_ms: 9.067071
+      type: 'test'
+      ...
+    # Subtest: deux clics Démarrer simultanés : opérations sérialisées et un seul serveur
+    ok 18 - deux clics Démarrer simultanés : opérations sérialisées et un seul serveur
+      ---
+      duration_ms: 319.879164
+      type: 'test'
+      ...
+    # Subtest: quitter le contrôleur et relancer sans terminal ni état perdu
+    ok 19 - quitter le contrôleur et relancer sans terminal ni état perdu
+      ---
+      duration_ms: 1137.633448
+      type: 'test'
+      ...
+    1..19
+ok 2 - Launcher : préparation et cycle complet sur de vrais processus isolés
+  ---
+  duration_ms: 14365.970119
+  type: 'test'
+  ...
+# Subtest: Linux : découverte Node hors PATH et absence de Node sans modification système
+ok 3 - Linux : découverte Node hors PATH et absence de Node sans modification système
+  ---
+  duration_ms: 102.100507
+  type: 'test'
+  ...
+1..3
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 16333.928925
