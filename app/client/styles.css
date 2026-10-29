@@ -2698,6 +2698,14 @@ ins {
   gap: var(--studio-space-4);
   justify-items: start;
 }
+.primitive-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--studio-space-3);
+}
+.primitive-list > .token-hint {
+  margin: 0;
+}
 .primitive-palette {
   justify-self: stretch;
   padding: var(--studio-space-4);

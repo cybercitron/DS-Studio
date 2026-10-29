@@ -6,6 +6,12 @@ import {
   type SemanticGroupId,
 } from '../shared/colors.js';
 import { isBaseToken, type TokenKey, type Tokens } from '../shared/model.js';
+import {
+  figmaFileName,
+  figmaVariablesFile,
+  primitiveColors,
+} from '../shared/figmaVariables.js';
+import { downloadText } from './api.js';
 import Icon from './Icon.js';
 import { tokenUsage } from './tokenUsage.js';
 
@@ -127,9 +133,37 @@ export function ColorsView({
                 </ol>
               </section>
             ))}
-            <button type="button" onClick={onCreatePalette}>
-              <Icon name="palette" /> Créer une palette
-            </button>
+            <div className="primitive-actions">
+              <button type="button" onClick={onCreatePalette}>
+                <Icon name="palette" /> Créer une palette
+              </button>
+              <button
+                type="button"
+                aria-describedby="primitives-figma-help"
+                onClick={() =>
+                  downloadText(
+                    figmaFileName('primitives'),
+                    JSON.stringify(
+                      figmaVariablesFile(
+                        primitiveColors(
+                          tokens,
+                          palettes.flatMap((p) => p.keys),
+                        ),
+                      ),
+                      null,
+                      2,
+                    ) + '\n',
+                    'application/json',
+                  )
+                }
+              >
+                Exporter pour Figma
+              </button>
+            </div>
+            <p className="token-hint" id="primitives-figma-help">
+              Toutes les primitives dans un fichier, à ouvrir avec le plugin
+              DS-Studio dans Figma (collection « Primitives »).
+            </p>
           </div>
         ) : (
           <div className="colors-empty">

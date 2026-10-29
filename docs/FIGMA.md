@@ -5,6 +5,16 @@ Figma n’a été réalisée. Aucun fichier explicitement autorisé n’a été 
 outils Figma présents dans une session de développement ne sont pas distribués
 avec ce starter et ne constituent pas une connexion de l’application.
 
+**Plugin maison palette → variables (29/10) : IMPLEMENTED, TESTED** (simulation
+automatisée, et essai réel sur le fichier de test avec Figma pour ordinateur :
+refus avec Annuler, 24 variables créées après validation, relues conformes).
+Seul pont d'écriture : un plugin de développement que l'étudiante lance elle-même
+dans Figma, sur le fichier ouvert, après un export volontaire depuis DS-Studio.
+Aperçu sans écriture, validation à usage unique liée au diff, création seulement
+(ni remplacement ni suppression), relecture. Pas de réseau, pas d'API REST des
+variables (réservée à Enterprise), pas de MCP. Mode d'emploi et limites :
+[connectors/figma/plugin/README.md](../connectors/figma/plugin/README.md).
+
 La [documentation Figma officielle du serveur distant](https://developers.figma.com/docs/figma-mcp-server/remote-server-installation/)
 indique que seuls les clients du catalogue autorisé peuvent se connecter. Un
 nouveau client doit passer par la procédure d’admission. DS-Studio n’est pas déclaré

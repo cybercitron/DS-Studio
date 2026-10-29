@@ -57,6 +57,23 @@ test('générateur de palettes : jaune vif, règle impossible, retouche, export'
     $value: '#FFFF0A',
   });
 
+  // Export pour le plugin Figma : collection Primitives, noms en dossiers.
+  const figmaDownload = page.waitForEvent('download');
+  await view.getByRole('button', { name: 'Exporter pour Figma' }).click();
+  const figmaFile = await figmaDownload;
+  expect(figmaFile.suggestedFilename()).toBe('jauneCapc.figma-variables.json');
+  const variables = JSON.parse(
+    await readFile((await figmaFile.path())!, 'utf8'),
+  );
+  expect(variables.format).toBe('ds-studio.figma-variables');
+  expect(variables.collection).toBe('Primitives');
+  expect(variables.variables).toHaveLength(6);
+  expect(variables.variables).toContainEqual({
+    name: 'color/jauneCapc/400',
+    type: 'COLOR',
+    value: '#FFFF0A',
+  });
+
   // Rien n'est écrit dans le Design System.
   const after = await (await page.request.get('/api/state')).json();
   expect(after.revision).toBe((await before).revision);

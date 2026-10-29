@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { readFile } from 'node:fs/promises';
 
 test('page Couleurs : onglets Primitives et Semantic, repli, clic vers Modifier', async ({
   page,
@@ -86,6 +87,20 @@ test('page Couleurs : onglets Primitives et Semantic, repli, clic vers Modifier'
   ).toHaveValue('color.bleuNuit.500');
   // Les primitives ne se mêlent pas aux sémantiques.
   await expect(semantic.getByText('bleuNuit')).toHaveCount(0);
+
+  // Export de toutes les primitives pour le plugin Figma.
+  const download = page.waitForEvent('download');
+  await primitives.getByRole('button', { name: 'Exporter pour Figma' }).click();
+  const file = await download;
+  expect(file.suggestedFilename()).toBe('primitives.figma-variables.json');
+  const exported = JSON.parse(await readFile((await file.path())!, 'utf8'));
+  expect(exported.collection).toBe('Primitives');
+  expect(exported.variables.map((v: { name: string }) => v.name)).toEqual(
+    Object.keys(added.tokens)
+      .filter((k) => k.startsWith('color.bleuNuit.'))
+      .sort()
+      .map((k) => k.split('.').join('/')),
+  );
 
   // Nettoyage : annulation de l'ajout.
   await page.getByRole('button', { name: /Historique/ }).click();

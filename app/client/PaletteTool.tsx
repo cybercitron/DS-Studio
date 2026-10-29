@@ -14,6 +14,7 @@ import {
   type PaletteRule,
 } from '../shared/palette.js';
 import type { Change, Tokens } from '../shared/model.js';
+import { figmaFileName, figmaVariablesFile } from '../shared/figmaVariables.js';
 import { downloadText } from './api.js';
 import Icon from './Icon.js';
 
@@ -404,6 +405,28 @@ export function PaletteTool({
             >
               Exporter la palette (JSON)
             </button>
+            <button
+              type="button"
+              onClick={() =>
+                downloadText(
+                  figmaFileName(paletteSlug(name)),
+                  JSON.stringify(
+                    figmaVariablesFile(
+                      Object.fromEntries(
+                        Object.entries(paletteTokens(name, palette.shades)).map(
+                          ([k, t]) => [k, t.$value],
+                        ),
+                      ),
+                    ),
+                    null,
+                    2,
+                  ) + '\n',
+                  'application/json',
+                )
+              }
+            >
+              Exporter pour Figma
+            </button>
           </div>
           <p className="token-hint" id="palette-add-help">
             {additions?.problem ? (
@@ -413,8 +436,10 @@ export function PaletteTool({
             ) : (
               <>
                 Ajout de {count} tokens <code>color.{paletteSlug(name)}.…</code>{' '}
-                : vous relirez le diff avant tout enregistrement. L’export
-                télécharge un fichier sans modifier le Design System.
+                : vous relirez le diff avant tout enregistrement. Les exports
+                téléchargent un fichier sans modifier le Design System ; «
+                Exporter pour Figma » se lit avec le plugin DS-Studio dans
+                Figma.
               </>
             )}
           </p>

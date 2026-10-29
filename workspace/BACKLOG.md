@@ -10,8 +10,14 @@ fabriquer et vérifier les briques longues à produire, puis les livrer dans Fig
 
 1. **Palette → variables Figma** (nouveau, 29/10). Livrer une palette générée
    dans Figma sous forme de variables, via un plugin Figma que je lance moi-même.
-   Commencer par un test sur le fichier Figma de test : refus sans validation,
-   écriture validée, résultat relu.
+   [x] Fait le 29/10, testé : bouton « Exporter pour Figma » (Créateur de
+   palettes et Couleurs › Primitives) et plugin maison
+   (`connectors/figma/plugin/`, mode d'emploi dans son README). Collection
+   « Primitives », rien n'est écrasé ni supprimé. Essai réel sur le fichier
+   de test : refus avec Annuler, 24 primitives créées après validation, relues
+   conformes.
+   Suites possibles : mode sombre, autres types de variables (espacements,
+   rayons), alias des sémantiques vers les primitives.
 
 2. **Générateur de composants** : choisir un type (bouton, select, card…), cocher
    ses propriétés d'après les bonnes pratiques et l'anatomie courante, avec les

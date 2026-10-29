@@ -345,3 +345,32 @@ locaux validés. Claude et Gemini ne sont pas activés sans qualification.
 - **Limite connue** : l'écriture dans Figma passera par un plugin que je lance
   moi-même (le plan Étudiant n'a pas d'accès automatique aux variables). Les
   prototypes et la documentation dépendent des composants.
+
+## 2026-10-29 — Palette → variables Figma, par un plugin maison
+
+- **Problème** : les palettes générées dans DS-Studio devaient être recréées à
+  la main dans Figma, qui est la source de vérité. Avec le plan Étudiant, l'API
+  des variables n'est pas accessible (elle est réservée à Enterprise).
+- **Options explorées** : collection « Primitives » ou collection « DS-Studio »
+  existante ; remplacer une variable existante (si je coche) ou ne jamais
+  l'écraser ; export depuis le Créateur de palettes, depuis Couleurs ›
+  Primitives, ou les deux.
+- **Décision** : un plugin Figma de développement, que je lance moi-même.
+  DS-Studio exporte un fichier `….figma-variables.json` depuis les deux
+  endroits. Le plugin montre d'abord ce qu'il va créer, puis n'écrit qu'après
+  ma validation, et relit chaque variable. Les variables vont dans la collection
+  « Primitives » et sont rangées en dossiers (`color › rougePrimaire › 050`).
+  Une variable qui existe déjà n'est jamais remplacée ni supprimée : elle est
+  seulement signalée.
+- **Raison** : je garde la main sur ce qui entre dans Figma, sans risquer
+  d'écraser un réglage fait dans Figma. La collection « Primitives » sépare les
+  couleurs brutes des futurs tokens sémantiques, qui auront leurs alias et
+  leurs modes.
+- **Preuve** : 6 tests du plugin avec un Figma simulé (refus, écriture,
+  relecture, rien d'écrasé), 2 tests de parcours pour l'export. Essai réel sur
+  le fichier de test : Annuler n'a rien écrit, puis 24 primitives ont été
+  créées et relues conformes.
+- **Limite connue** : couleurs seulement, un seul mode, pas d'alias. Le plugin
+  ne vérifie pas lui-même qu'il s'agit du bon fichier Figma : il affiche son
+  nom, et c'est à moi de vérifier avant de valider. Pour modifier une palette
+  déjà livrée, il faut la renommer ou la corriger à la main dans Figma.

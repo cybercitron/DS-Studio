@@ -1,0 +1,12 @@
+{
+  "name": "DS-Studio — variables",
+  "id": "ds-studio-variables-dev",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": ["none"]
+  }
+}

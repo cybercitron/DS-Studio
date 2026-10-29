@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        margin: 0;
+        padding: 16px;
+        font:
+          13px/1.45 Inter,
+          system-ui,
+          sans-serif;
+        color: var(--figma-color-text, #1e1e1e);
+        background: var(--figma-color-bg, #fff);
+      }
+      h1 {
+        font-size: 15px;
+        margin: 0 0 4px;
+      }
+      h2 {
+        font-size: 13px;
+        margin: 16px 0 6px;
+      }
+      p {
+        margin: 0 0 8px;
+      }
+      .muted {
+        color: var(--figma-color-text-secondary, #666);
+      }
+      label.file {
+        display: block;
+        padding: 12px;
+        border: 1px dashed var(--figma-color-border, #ccc);
+        border-radius: 8px;
+        margin: 12px 0;
+      }
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      li {
+        display: grid;
+        grid-template-columns: 20px minmax(0, 1fr) auto;
+        gap: 8px;
+        align-items: center;
+        padding: 3px 0;
+      }
+      .swatch {
+        width: 18px;
+        height: 18px;
+        border-radius: 4px;
+        border: 1px solid var(--figma-color-border, #ccc);
+      }
+      code {
+        font:
+          12px ui-monospace,
+          monospace;
+      }
+      .summary {
+        padding: 8px 10px;
+        border-radius: 8px;
+        margin: 12px 0;
+        background: var(--figma-color-bg-secondary, #f5f5f5);
+      }
+      .error {
+        color: var(--figma-color-text-danger, #b3261e);
+      }
+      .ok {
+        color: var(--figma-color-text-success, #14632f);
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 16px;
+        position: sticky;
+        bottom: 0;
+        padding: 8px 0;
+        background: var(--figma-color-bg, #fff);
+      }
+      button {
+        font: inherit;
+        padding: 8px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        border: 1px solid var(--figma-color-border, #ccc);
+        background: var(--figma-color-bg, #fff);
+        color: var(--figma-color-text, #1e1e1e);
+      }
+      button.primary {
+        background: var(--figma-color-bg-brand, #0d99ff);
+        color: var(--figma-color-text-onbrand, #fff);
+        border-color: transparent;
+      }
+      button:focus-visible {
+        outline: 2px solid var(--figma-color-border-selected, #0d99ff);
+        outline-offset: 2px;
+      }
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>DS-Studio → variables Figma</h1>
+    <p class="muted">
+      Rien n’est écrit avant votre validation. Aucune variable existante n’est
+      remplacée ni supprimée.
+    </p>
+
+    <label class="file">
+      1. Choisissez le fichier exporté par DS-Studio
+      (<code>….figma-variables.json</code>)<br />
+      <input id="file" type="file" accept=".json,application/json" />
+    </label>
+
+    <div id="status" role="status" aria-live="polite"></div>
+
+    <section id="plan" hidden>
+      <p class="summary" id="summary"></p>
+      <div id="groups"></div>
+      <div class="actions">
+        <button id="apply" class="primary">Valider et créer</button>
+        <button id="cancel">Annuler</button>
+      </div>
+    </section>
+
+    <section id="result" hidden>
+      <p class="summary" id="result-summary"></p>
+      <ul id="readback"></ul>
+      <div class="actions">
+        <button id="again">Importer un autre fichier</button>
+        <button id="close">Fermer</button>
+      </div>
+    </section>
+
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const send = (msg) => parent.postMessage({ pluginMessage: msg }, '*');
+      let planId = null;
+
+      function show(section) {
+        $('plan').hidden = section !== 'plan';
+        $('result').hidden = section !== 'result';
+      }
+      function status(text, kind) {
+        $('status').textContent = text;
+        $('status').className = kind || '';
+      }
+      function row(name, value, note) {
+        const li = document.createElement('li');
+        const sw = document.createElement('span');
+        sw.className = 'swatch';
+        if (/^#/.test(value)) sw.style.background = value;
+        const n = document.createElement('code');
+        n.textContent = name;
+        const v = document.createElement('span');
+        v.textContent = note || value;
+        li.append(sw, n, v);
+        return li;
+      }
+      function group(title, items, note) {
+        if (!items.length) return null;
+        const wrap = document.createElement('div');
+        const h = document.createElement('h2');
+        h.textContent = `${title} (${items.length})`;
+        const ul = document.createElement('ul');
+        for (const i of items) ul.append(row(i.name, i.value, note && note(i)));
+        wrap.append(h, ul);
+        return wrap;
+      }
+
+      $('file').addEventListener('change', async () => {
+        const f = $('file').files[0];
+        if (!f) return;
+        show(null);
+        planId = null;
+        try {
+          send({ type: 'preview', file: JSON.parse(await f.text()) });
+          status('Lecture du fichier Figma…');
+        } catch {
+          status('Ce fichier n’est pas un JSON lisible.', 'error');
+        }
+      });
+      $('apply').onclick = () => {
+        $('apply').disabled = true;
+        status('Écriture puis relecture…');
+        send({ type: 'apply', id: planId });
+      };
+      $('cancel').onclick = () => send({ type: 'cancel' });
+      $('again').onclick = () => {
+        $('file').value = '';
+        show(null);
+        status('');
+        $('file').focus();
+      };
+      $('close').onclick = () => send({ type: 'close' });
+
+      onmessage = (event) => {
+        const msg = event.data.pluginMessage;
+        if (!msg) return;
+        if (msg.type === 'error' || msg.type === 'refused') {
+          planId = null;
+          show(null);
+          status(msg.message, msg.type === 'error' ? 'error' : '');
+        } else if (msg.type === 'plan') {
+          planId = msg.id;
+          const { plan } = msg;
+          const by = (s) => plan.items.filter((i) => i.status === s);
+          const create = by('create');
+          $('summary').textContent =
+            `2. Vérifiez. Fichier « ${plan.document} », collection « ${plan.collection} »` +
+            (plan.collectionExists ? '' : ' (sera créée)') +
+            ` : ${create.length} à créer, ${by('same').length} déjà identique(s), ` +
+            `${by('conflict').length} différente(s) laissée(s) telle(s) quelle(s).`;
+          $('groups').replaceChildren(
+            ...[
+              group('À créer', create),
+              group(
+                'Différentes : non modifiées',
+                by('conflict'),
+                (i) => `Figma : ${i.current} · fichier : ${i.value}`,
+              ),
+              group('Déjà identiques', by('same')),
+            ].filter(Boolean),
+          );
+          $('apply').disabled = !create.length;
+          $('apply').textContent = create.length
+            ? `Valider et créer ${create.length} variable(s)`
+            : 'Rien à créer';
+          status('');
+          show('plan');
+          $('apply').focus();
+        } else if (msg.type === 'done') {
+          const bad = msg.readback.filter((r) => !r.ok);
+          $('result-summary').textContent =
+            `3. Relu dans « ${msg.document} », collection « ${msg.collection} » : ` +
+            `${msg.readback.length - bad.length}/${msg.readback.length} variable(s) conformes. ` +
+            `${msg.untouched} autre(s) non touchée(s).`;
+          $('result-summary').className =
+            `summary ${bad.length ? 'error' : 'ok'}`;
+          $('readback').replaceChildren(
+            ...msg.readback.map((r) =>
+              row(
+                r.name,
+                r.read,
+                r.ok ? `${r.read} ✓` : `relu ${r.read}, attendu ${r.expected}`,
+              ),
+            ),
+          );
+          status('');
+          show('result');
+          $('again').focus();
+        }
+      };
+    </script>
+  </body>
+</html>
