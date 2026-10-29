@@ -2,6 +2,7 @@ import { test, expect, chromium } from '@playwright/test';
 import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { openEditor } from './editor.js';
 
 test('zoom navigateur réel 100–200 %, sans zoom CSS ni simple redimensionnement du viewport', async ({}, info) => {
   const temporary = await mkdtemp(path.join(tmpdir(), 'ds-zoom-'));
@@ -41,7 +42,7 @@ test('zoom navigateur réel 100–200 %, sans zoom CSS ni simple redimensionneme
     const page = await context.newPage();
     await page.goto('http://127.0.0.1:4318');
     await page
-      .getByRole('heading', { name: 'Tokens sémantiques', exact: true })
+      .getByRole('heading', { name: 'Design System', exact: true })
       .waitFor();
     const measurements = [];
     for (const factor of [1, 1.25, 1.5, 2]) {
@@ -79,6 +80,7 @@ test('zoom navigateur réel 100–200 %, sans zoom CSS ni simple redimensionneme
       measurements.push({ factor, ...size });
     }
     expect(measurements[3].width).toBeCloseTo(measurements[0].width / 2, 0);
+    await openEditor(page);
     await page.getByLabel('Valeur du token').fill('#504030');
     await page.getByRole('button', { name: 'Proposer', exact: true }).click();
     await expect(

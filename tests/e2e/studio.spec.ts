@@ -1,11 +1,14 @@
 import { test, expect } from '@playwright/test';
+import { openComponent, openEditor } from './editor.js';
 
 test('boucle centrale réelle : diff, validation, propagation, recharge, annulation sélective', async ({
   page,
 }) => {
   await page.goto('/');
+  await openEditor(page);
+  await openComponent(page, 'Bouton');
   await expect(
-    page.getByRole('heading', { name: 'Lisière', exact: true }),
+    page.getByRole('heading', { name: 'Cartel', exact: true }),
   ).toBeVisible();
   await expect(
     page.getByText('Figma non connecté', { exact: true }),
@@ -46,6 +49,7 @@ test('boucle centrale réelle : diff, validation, propagation, recharge, annulat
   await dialog.getByRole('button', { name: 'Valider et enregistrer' }).click();
   await expect(mainButton).toHaveCSS('background-color', 'rgb(138, 59, 32)');
   await expect(editorAction).toHaveCSS('background-color', chromeColor);
+  await openComponent(page, 'Carte atelier');
   await expect(
     catalogue.getByRole('button', { name: 'Réserver une place', exact: true }),
   ).toHaveCSS('background-color', 'rgb(138, 59, 32)');
@@ -60,6 +64,8 @@ test('boucle centrale réelle : diff, validation, propagation, recharge, annulat
     mobile.getByRole('button', { name: 'Découvrir', exact: true }),
   ).toHaveCSS('background-color', 'rgb(138, 59, 32)');
   await page.reload();
+  await openEditor(page);
+  await openComponent(page, 'Bouton');
   await expect(mainButton).toHaveCSS('background-color', 'rgb(138, 59, 32)');
   await page
     .getByRole('combobox', { name: 'Token', exact: true })
@@ -159,6 +165,7 @@ test('entrée couleur invalide sans mutation et clavier du diff', async ({
   page,
 }) => {
   await page.goto('/');
+  await openEditor(page);
   await page.getByLabel('Valeur du token').fill('red');
   await page.getByRole('button', { name: 'Proposer', exact: true }).click();
   await expect(page.getByRole('alert')).toContainText('Données invalides');
@@ -177,7 +184,7 @@ test('export navigateur, import valide avec diff, fichier invalide sans écritur
 }) => {
   await page.goto('/');
   await expect(
-    page.getByRole('heading', { name: 'Tokens sémantiques' }),
+    page.getByRole('heading', { name: 'Design System', exact: true }),
   ).toBeVisible();
   const before = await (await page.request.get('/api/state')).json();
   const download = page.waitForEvent('download');
@@ -216,6 +223,7 @@ test('V2 : contraste proposé immédiat sans modifier les composants enregistré
   page,
 }) => {
   await page.goto('/');
+  await openEditor(page);
   await page
     .getByRole('combobox', { name: 'Token', exact: true })
     .selectOption('color.brand');
@@ -235,6 +243,7 @@ test('V2 : brief privé persistant, indépendant du mode IA', async ({
   page,
 }) => {
   await page.goto('/');
+  await openEditor(page);
   await page.getByText('Mon PFE · brief privé', { exact: true }).click();
   await page
     .getByLabel('Nom du PFE', { exact: true })
@@ -248,6 +257,7 @@ test('V2 : brief privé persistant, indépendant du mode IA', async ({
   await page.getByRole('button', { name: 'Enregistrer le brief' }).click();
   await expect(page.getByText('Brief enregistré sur ce poste.')).toBeVisible();
   await page.reload();
+  await openEditor(page);
   await page.getByText('Mon PFE · brief privé', { exact: true }).click();
   await expect(page.getByLabel('Nom du PFE', { exact: true })).toHaveValue(
     'Mon atelier accessible',
@@ -261,8 +271,9 @@ test('V2 : recherche, brouillon récupéré après recharge et abandon sans écr
   page,
 }) => {
   await page.goto('/');
+  await openEditor(page);
   const before = await (await page.request.get('/api/state')).json();
-  await page.getByLabel('Rechercher un token').fill('space');
+  await page.getByLabel('Rechercher un composant ou un token').fill('space');
   await expect(
     page.getByText('3 résultat(s).', { exact: false }),
   ).toBeVisible();
@@ -274,6 +285,7 @@ test('V2 : recherche, brouillon récupéré après recharge et abandon sans écr
     page.getByText('Brouillon non enregistré.', { exact: false }),
   ).toBeVisible();
   await page.reload();
+  await openEditor(page);
   await expect(
     page.getByRole('combobox', { name: 'Token', exact: true }),
   ).toHaveValue('space.lg');
@@ -295,6 +307,7 @@ test('V2 : conflit multi-onglets visible dans le diff, aucune perte de données'
   context,
 }) => {
   await page.goto('/');
+  await openEditor(page);
   await page
     .getByRole('combobox', { name: 'Token', exact: true })
     .selectOption('color.brand');
@@ -302,6 +315,7 @@ test('V2 : conflit multi-onglets visible dans le diff, aucune perte de données'
   await page.getByRole('button', { name: 'Proposer', exact: true }).click();
   const other = await context.newPage();
   await other.goto('/');
+  await openEditor(other);
   await other
     .getByRole('combobox', { name: 'Token', exact: true })
     .selectOption('color.brand');
@@ -326,7 +340,10 @@ test('V2 : capacité de session périmée simulée sans rejeu ambigu', async ({
   page,
 }) => {
   await page.goto('/');
-  await page.getByRole('heading', { name: 'Tokens sémantiques' }).waitFor();
+  await page
+    .getByRole('heading', { name: 'Design System', exact: true })
+    .waitFor();
+  await openEditor(page);
   const boot = await (await page.request.get('/api/bootstrap')).json();
   // Un seul refus certain avant mutation, comme une capacité périmée après restart.
   let requests = 0;
@@ -366,7 +383,9 @@ test('V2 : clavier, mobile 375 px et absence de stockage navigateur', async ({
   });
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto('/');
-  await page.getByRole('heading', { name: 'Tokens sémantiques' }).waitFor();
+  await page
+    .getByRole('heading', { name: 'Design System', exact: true })
+    .waitFor();
   await page.keyboard.press('Tab');
   await expect(
     page.getByRole('link', { name: 'Aller aux tokens' }),
@@ -375,6 +394,7 @@ test('V2 : clavier, mobile 375 px et absence de stockage navigateur', async ({
   await expect(
     page.getByRole('heading', { name: 'Design System', exact: true }),
   ).toBeFocused();
+  await openEditor(page);
   await page.getByLabel('Valeur du token').fill('#114477');
   await page.getByRole('button', { name: 'Proposer', exact: true }).click();
   await expect(page.getByRole('dialog')).toBeVisible();

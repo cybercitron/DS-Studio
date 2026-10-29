@@ -5,6 +5,8 @@
 - Garder un focus clavier visible et des libellés explicites pour les formulaires.
 - Distinguer normal, survol, focus, désactivé et erreur.
 - Vérifier une largeur de 320 px sans zoom et un scénario desktop.
+- Choisir les tokens de taille (texte, espacements) pour un usage mobile à une main,
+  debout, en salle d’exposition à lumière variable.
 - Expliquer chaque proposition : intention, composants touchés, preuve attendue.
 - Ne jamais annoncer une synchronisation Figma qui n’a pas été relue et démontrée.
 

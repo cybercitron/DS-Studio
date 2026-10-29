@@ -1,6 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
-import { Button, DSProvider, Catalogue, Scenario } from './DesignSystem.js';
+import {
+  Button,
+  DSProvider,
+  Scenario,
+  Thumbnail,
+  components,
+  type ComponentId,
+} from './DesignSystem.js';
 import Icon from './Icon.js';
+import ComponentPage from './ComponentPage.js';
+import { componentDocs } from './componentDocs.js';
 import ProjectBrief from './ProjectBrief.js';
 import { useTokenDraft } from './useTokenDraft.js';
 import {
@@ -20,6 +29,18 @@ import {
   type TokenKey,
 } from '../shared/model.js';
 
+const families = [
+  { prefix: 'color.', name: 'Couleurs' },
+  { prefix: 'font.', name: 'Typographie' },
+  { prefix: 'space.', name: 'Espacements' },
+  { prefix: 'radius.', name: 'Rayons' },
+] as const;
+type Family = (typeof families)[number];
+// Ce que le canevas affiche : tout le catalogue, une famille ou un composant.
+type Selection =
+  | { kind: 'all' }
+  | { kind: 'family'; prefix: Family['prefix'] }
+  | { kind: 'component'; id: ComponentId };
 const devices = [
   { label: 'Compact · 320', width: 320 },
   { label: 'Standard · 375', width: 375 },
@@ -95,6 +116,7 @@ export default function App() {
     state?.tokens[key].$value,
   );
   const [search, setSearch] = useState('');
+  const [selection, setSelection] = useState<Selection>({ kind: 'all' });
   const [agents, setAgents] = useState<Bootstrap['agents']>([]);
   const [proposal, setProposal] = useState<Proposal>();
   const [error, setError] = useState('');
@@ -114,7 +136,7 @@ export default function App() {
   const [canvasView, setCanvasView] = useState<'catalogue' | 'preview'>(
     'catalogue',
   );
-  const [agentOpen, setAgentOpen] = useState(true);
+  const [agentOpen, setAgentOpen] = useState(false);
   const [focusCanvas, setFocusCanvas] = useState(false);
   function navigatePanel(id: string) {
     setActivePanel(id);
@@ -122,6 +144,30 @@ export default function App() {
     if (id === 'canvas') setCanvasView('catalogue');
     requestAnimationFrame(() =>
       document.getElementById(`${id}-title`)?.focus(),
+    );
+  }
+  function openEditor(k?: TokenKey) {
+    if (k) setKey(k);
+    setFocusCanvas(false);
+    if (matchMedia('(max-width: 1099px)').matches) navigatePanel('agent');
+    else {
+      setAgentOpen(true);
+      if (!k)
+        requestAnimationFrame(() =>
+          document.getElementById('agent-title')?.focus(),
+        );
+    }
+  }
+  function select(next: Selection) {
+    setSelection(next);
+    setCanvasView('catalogue');
+    if (matchMedia('(max-width: 1099px)').matches) navigatePanel('canvas');
+    else setActivePanel('canvas');
+  }
+  function closeEditor() {
+    setAgentOpen(false);
+    requestAnimationFrame(() =>
+      document.querySelector<HTMLElement>('.edit-fab')?.focus(),
     );
   }
   const historyDialog = useRef<HTMLDialogElement>(null);
@@ -245,9 +291,46 @@ export default function App() {
             : state.tokens['color.onBrand'].$value,
         )
       : undefined;
-  const matchingKeys = tokenKeys.filter((k) =>
-    k.toLowerCase().includes(search.trim().toLowerCase()),
+  const query = search.trim().toLowerCase();
+  const matchingKeys = tokenKeys.filter((k) => k.toLowerCase().includes(query));
+  const matchingComponents = components.filter((c) =>
+    c.name.toLowerCase().includes(query),
   );
+  const familyOf = (k: TokenKey) =>
+    families.find((f) => k.startsWith(f.prefix))!;
+  const tokenRow = (k: TokenKey, label: string) => (
+    <button
+      key={k}
+      className="token-row"
+      aria-label={`Sélectionner ${k}`}
+      aria-pressed={key === k}
+      onClick={() => {
+        select({ kind: 'family', prefix: familyOf(k).prefix });
+        openEditor(k);
+      }}
+    >
+      {state.tokens[k].$type === 'color' ? (
+        <span
+          className="token-dot"
+          style={{ background: String(state.tokens[k].$value) }}
+        />
+      ) : (
+        <span className="token-unit" aria-hidden="true">
+          {state.tokens[k].$type === 'fontFamily' ? 'Aa' : 'px'}
+        </span>
+      )}
+      <span className="token-name">{label}</span>
+      <code>{state.tokens[k].$value}</code>
+    </button>
+  );
+  const selectedFamily =
+    selection.kind === 'family'
+      ? families.find((f) => f.prefix === selection.prefix)!
+      : undefined;
+  const selectedComponent =
+    selection.kind === 'component'
+      ? components.find((c) => c.id === selection.id)!
+      : undefined;
   return (
     <>
       <a
@@ -267,8 +350,8 @@ export default function App() {
         </div>
         <span className="header-divider" aria-hidden="true" />
         <div className="project-identity">
-          <h1>Lisière</h1>
-          <span>Design System d’exemple</span>
+          <h1>Cartel</h1>
+          <span>Design System du Capc</span>
         </div>
         <div className="intro-actions">
           <button
@@ -311,18 +394,6 @@ export default function App() {
             <Icon name="history" />
             <span>Historique</span>
             <span className="revision-number">{state.revision}</span>
-          </button>
-          <button
-            className="agent-trigger"
-            aria-label="Afficher ou masquer l’agent"
-            aria-pressed={agentOpen}
-            onClick={() => {
-              setAgentOpen(!agentOpen);
-              setFocusCanvas(false);
-            }}
-          >
-            <Icon name="chat" />
-            <span>Agent</span>
           </button>
         </div>
       </header>
@@ -403,9 +474,9 @@ export default function App() {
         {(
           [
             ['ds', 'Tokens', 'sliders'],
-            ['canvas', 'Composants', 'layers'],
+            ['canvas', 'Design', 'layers'],
             ['mobile', 'Aperçu', 'phone'],
-            ['agent', 'Agent', 'chat'],
+            ['agent', 'Modifier', 'edit'],
           ] as const
         ).map(([id, label, icon]) => (
           <button
@@ -434,222 +505,126 @@ export default function App() {
             <h2 id="ds-title" tabIndex={-1}>
               Design System
             </h2>
-            <span className="count">{tokenKeys.length}</span>
           </div>
           <div className="token-browser">
-            <div className="inventory-heading">
-              <h3>Tokens sémantiques</h3>
-            </div>
             <label className="token-search">
               <Icon name="search" />
-              <span className="sr-only">Rechercher un token</span>
+              <span className="sr-only">
+                Rechercher un composant ou un token
+              </span>
               <input
                 type="search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Rechercher un token…"
+                placeholder="Rechercher…"
               />
             </label>
-            {search && (
+            {query && (
               <p className="search-status" role="status">
-                {matchingKeys.length} résultat(s). La sélection courante reste
-                accessible.
+                {matchingComponents.length + matchingKeys.length} résultat(s).
               </p>
             )}
-            <div className="token-list" aria-label="Inventaire des tokens">
-              {(
-                [
-                  ['color.', 'Couleurs'],
-                  ['font.', 'Typographie'],
-                  ['space.', 'Espacements'],
-                  ['radius.', 'Rayons'],
-                ] as const
-              ).map(([prefix, title]) => {
-                const keys = matchingKeys.filter((k) => k.startsWith(prefix));
-                return (
-                  keys.length > 0 && (
-                    <div className="token-group" key={prefix}>
-                      <h4>
-                        {title}
-                        <span>{keys.length}</span>
-                      </h4>
-                      {keys.map((k) => (
+            <div
+              className="token-list"
+              aria-label="Navigation du Design System"
+            >
+              {query ? (
+                <>
+                  {matchingComponents.length > 0 && (
+                    <div className="token-group">
+                      <h3>Composants</h3>
+                      {matchingComponents.map((c) => (
                         <button
-                          key={k}
-                          className="token-row"
-                          aria-label={`Sélectionner ${k}`}
-                          aria-pressed={key === k}
-                          onClick={() => setKey(k)}
+                          key={c.id}
+                          className="nav-item"
+                          aria-pressed={
+                            selection.kind === 'component' &&
+                            selection.id === c.id
+                          }
+                          onClick={() =>
+                            select({ kind: 'component', id: c.id })
+                          }
                         >
-                          {state.tokens[k].$type === 'color' ? (
-                            <span
-                              className="token-dot"
-                              style={{
-                                background: String(state.tokens[k].$value),
-                              }}
-                            />
-                          ) : (
-                            <span className="token-unit" aria-hidden="true">
-                              {state.tokens[k].$type === 'fontFamily'
-                                ? 'Aa'
-                                : 'px'}
-                            </span>
-                          )}
-                          <span className="token-name">
-                            {k.slice(prefix.length)}
-                          </span>
-                          <code>{state.tokens[k].$value}</code>
+                          <Icon name="layers" />
+                          {c.name}
                         </button>
                       ))}
                     </div>
-                  )
-                );
-              })}
-              {matchingKeys.length === 0 && (
-                <div className="search-empty">
-                  <p>Aucun token trouvé.</p>
-                  <button onClick={() => setSearch('')}>
-                    Effacer la recherche
-                  </button>
-                </div>
+                  )}
+                  {matchingKeys.length > 0 && (
+                    <div className="token-group">
+                      <h3>Tokens</h3>
+                      {matchingKeys.map((k) => tokenRow(k, k))}
+                    </div>
+                  )}
+                  {matchingComponents.length + matchingKeys.length === 0 && (
+                    <div className="search-empty">
+                      <p>Aucun résultat.</p>
+                      <button onClick={() => setSearch('')}>
+                        Effacer la recherche
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  <div className="token-group">
+                    <h3>
+                      Tokens<span>{tokenKeys.length}</span>
+                    </h3>
+                    {families.map((f) => (
+                      <button
+                        key={f.prefix}
+                        className="nav-item"
+                        aria-pressed={
+                          selection.kind === 'family' &&
+                          selection.prefix === f.prefix
+                        }
+                        onClick={() =>
+                          select({ kind: 'family', prefix: f.prefix })
+                        }
+                      >
+                        <Icon name="sliders" />
+                        {f.name}
+                        <span className="nav-count">
+                          {
+                            tokenKeys.filter((k) => k.startsWith(f.prefix))
+                              .length
+                          }
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                  <div className="token-group">
+                    <h3>
+                      Composants<span>{components.length}</span>
+                    </h3>
+                    <button
+                      className="nav-item"
+                      aria-pressed={selection.kind === 'all'}
+                      onClick={() => select({ kind: 'all' })}
+                    >
+                      <Icon name="layers" />
+                      Vue d’ensemble
+                    </button>
+                    {components.map((c) => (
+                      <button
+                        key={c.id}
+                        className="nav-item"
+                        aria-pressed={
+                          selection.kind === 'component' &&
+                          selection.id === c.id
+                        }
+                        onClick={() => select({ kind: 'component', id: c.id })}
+                      >
+                        <Icon name="layers" />
+                        {c.name}
+                      </button>
+                    ))}
+                  </div>
+                </>
               )}
             </div>
-          </div>
-          <div className="token-editor">
-            <div className="editor-title">
-              <h3>Propriétés</h3>
-              <span>
-                {draft === String(current) ? 'Enregistré' : 'Brouillon'}
-              </span>
-            </div>
-            <form
-              className="token-form"
-              onSubmit={(e) => {
-                e.preventDefault();
-                void proposeToken();
-              }}
-            >
-              <label className="field">
-                Token
-                <select
-                  value={key}
-                  onChange={(e) => setKey(e.target.value as TokenKey)}
-                >
-                  {[...new Set([key, ...matchingKeys])].map((k) => (
-                    <option key={k}>{k}</option>
-                  ))}
-                </select>
-              </label>
-              <div className="field">
-                <label htmlFor="token-value">Valeur</label>
-                <div className="value-control">
-                  {state.tokens[key].$type === 'color' && (
-                    <input
-                      aria-label="Sélecteur de couleur"
-                      type="color"
-                      value={
-                        /^#[0-9a-fA-F]{6}$/.test(draft)
-                          ? draft
-                          : String(current)
-                      }
-                      onChange={(e) => setDraft(e.target.value)}
-                    />
-                  )}
-                  {state.tokens[key].$type === 'fontFamily' ? (
-                    <select
-                      id="token-value"
-                      aria-label="Valeur du token"
-                      aria-describedby="token-format"
-                      value={draft}
-                      onChange={(e) => setDraft(e.target.value)}
-                    >
-                      {['system-ui', 'Arial', 'Georgia', 'Verdana'].map((f) => (
-                        <option key={f}>{f}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    <input
-                      id="token-value"
-                      aria-label="Valeur du token"
-                      aria-describedby="token-format"
-                      value={draft}
-                      onChange={(e) => setDraft(e.target.value)}
-                      required
-                      type={
-                        state.tokens[key].$type === 'dimension'
-                          ? 'number'
-                          : 'text'
-                      }
-                      min={
-                        state.tokens[key].$type === 'dimension' ? 0 : undefined
-                      }
-                      max={
-                        state.tokens[key].$type === 'dimension'
-                          ? 128
-                          : undefined
-                      }
-                      step={
-                        state.tokens[key].$type === 'dimension'
-                          ? 'any'
-                          : undefined
-                      }
-                      maxLength={20}
-                    />
-                  )}
-                </div>
-              </div>
-              <button
-                className="studio-primary"
-                disabled={!boot || draft === String(current)}
-              >
-                Proposer
-              </button>
-            </form>
-            {draft !== String(current) && (
-              <p className="draft-status" role="status">
-                {recovered
-                  ? 'Brouillon récupéré dans cet onglet.'
-                  : 'Brouillon non enregistré.'}{' '}
-                <button type="button" onClick={discard}>
-                  Abandonner le brouillon
-                </button>
-              </p>
-            )}
-            <p className="token-hint" id="token-format">
-              {state.tokens[key].$type === 'color'
-                ? '#RRGGBB · '
-                : state.tokens[key].$type === 'dimension'
-                  ? 'Pixels, de 0 à 128 · '
-                  : ''}
-              Enregistrement après validation.
-            </p>
-            <p className="contrast" aria-live="polite">
-              Marque / texte sur marque :{' '}
-              <strong>
-                {contrast(
-                  state.tokens['color.brand'].$value,
-                  state.tokens['color.onBrand'].$value,
-                ).toFixed(2)}
-                :1
-              </strong>{' '}
-              ·{' '}
-              {contrast(
-                state.tokens['color.brand'].$value,
-                state.tokens['color.onBrand'].$value,
-              ) >= 4.5
-                ? 'AA texte courant'
-                : 'Contraste à améliorer'}
-            </p>
-            {draftContrast !== undefined && draft !== String(current) && (
-              <p className="contrast" role="status">
-                Contraste proposé :{' '}
-                <strong>{draftContrast.toFixed(2)}:1</strong> ·{' '}
-                {draftContrast >= 4.5
-                  ? 'AA texte courant'
-                  : 'Contraste à améliorer'}
-                . Cette indication ne certifie pas tous les états du composant.
-              </p>
-            )}
           </div>
         </section>
         <section
@@ -660,7 +635,7 @@ export default function App() {
         >
           <div className="canvas-toolbar">
             <h2 id="canvas-title" className="sr-only" tabIndex={-1}>
-              Composants
+              Design
             </h2>
             <div className="canvas-tabs" aria-label="Vue du canevas">
               <button
@@ -671,7 +646,7 @@ export default function App() {
                 }}
               >
                 <Icon name="layers" />
-                Composants
+                Design
               </button>
               <button
                 aria-pressed={canvasView === 'preview'}
@@ -701,12 +676,106 @@ export default function App() {
           >
             <div className="canvas-document-heading">
               <div>
-                <h3>Bibliothèque de composants</h3>
-                <p>Lisière · exemple fictif</p>
+                <h3>
+                  {selectedFamily?.name ??
+                    selectedComponent?.name ??
+                    'Composants'}
+                </h3>
+                {selectedComponent ? (
+                  <>
+                    <p className="component-definition">
+                      {componentDocs[selectedComponent.id].definition}
+                    </p>
+                    <p className="component-usage">
+                      <strong>Quand l’utiliser.</strong>{' '}
+                      {componentDocs[selectedComponent.id].usage}
+                    </p>
+                  </>
+                ) : (
+                  <p>
+                    {selectedFamily
+                      ? 'Famille de tokens · cliquez un token pour le modifier'
+                      : `${components.length} composants · Cartel`}
+                  </p>
+                )}
               </div>
               <span>Valeurs enregistrées</span>
             </div>
-            <Catalogue tokens={state.tokens} />
+            {selectedFamily ? (
+              <div className="family-view">
+                {tokenKeys
+                  .filter((k) => k.startsWith(selectedFamily.prefix))
+                  .map((k) => {
+                    const t = state.tokens[k];
+                    return (
+                      <button
+                        key={k}
+                        className="family-row"
+                        aria-label={`Sélectionner ${k}`}
+                        aria-pressed={key === k}
+                        onClick={() => openEditor(k)}
+                      >
+                        <span className="family-sample" aria-hidden="true">
+                          {t.$type === 'color' ? (
+                            <span
+                              className="sample-color"
+                              style={{ background: String(t.$value) }}
+                            />
+                          ) : t.$type === 'fontFamily' ? (
+                            <span style={{ fontFamily: String(t.$value) }}>
+                              Aa
+                            </span>
+                          ) : k.startsWith('font.') ? (
+                            <span style={{ fontSize: `${t.$value}px` }}>
+                              Aa
+                            </span>
+                          ) : k.startsWith('radius.') ? (
+                            <span
+                              className="sample-radius"
+                              style={{ borderRadius: `${t.$value}px` }}
+                            />
+                          ) : (
+                            <span
+                              className="sample-space"
+                              style={{ width: `${t.$value}px` }}
+                            />
+                          )}
+                        </span>
+                        <span className="family-name">
+                          <strong>
+                            {k.slice(selectedFamily.prefix.length)}
+                          </strong>
+                          <code>{k}</code>
+                        </span>
+                        <code className="family-value">
+                          {t.$value}
+                          {t.$type === 'dimension' ? ' px' : ''}
+                        </code>
+                      </button>
+                    );
+                  })}
+              </div>
+            ) : selectedComponent ? (
+              <ComponentPage
+                key={selectedComponent.id}
+                tokens={state.tokens}
+                id={selectedComponent.id}
+              />
+            ) : (
+              <ul className="component-gallery" aria-label="Composants">
+                {components.map((c) => (
+                  <li key={c.id} className="gallery-card">
+                    <Thumbnail tokens={state.tokens} id={c.id} />
+                    <button
+                      className="gallery-link"
+                      onClick={() => select({ kind: 'component', id: c.id })}
+                    >
+                      {c.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
           <section
             id="mobile-panel"
@@ -772,130 +841,277 @@ export default function App() {
         >
           <div className="panel-heading">
             <h2 id="agent-title" tabIndex={-1}>
-              <Icon name="chat" />
-              Agent
+              <Icon name="edit" />
+              Modifier
             </h2>
-            <span className="agent-state">
-              {agent === 'manual' ? 'Facultatif' : 'Codex'}
-            </span>
+            <button
+              className="icon-button close-editor"
+              aria-label="Fermer le panneau Modifier"
+              title="Fermer le panneau Modifier"
+              onClick={closeEditor}
+            >
+              <Icon name="close" />
+            </button>
           </div>
           <div className="panel-body">
-            <ProjectBrief />
-            <label className="field agent-mode">
-              Mode de travail
-              <select value={agent} onChange={(e) => setAgent(e.target.value)}>
-                <option value="manual">Manuel · sans compte IA</option>
-                <option value="codex">Codex · expérimental qualifié</option>
-                <option value="claude" disabled>
-                  Claude Code · non implémenté
-                </option>
-                <option value="gemini" disabled>
-                  Gemini CLI · non implémenté
-                </option>
-              </select>
-            </label>
-            {agent === 'manual' ? (
-              <div className="agent-empty">
-                <div className="empty-title">
-                  <Icon name="sliders" />
-                  <h3>Édition manuelle</h3>
-                </div>
-                <p>
-                  Sélectionnez un token. Proposez une valeur, puis examinez le
-                  diff avant de l’enregistrer.
-                </p>
-                <div className="workflow-path">
-                  <span>Sélectionner</span>
-                  <Icon name="arrow" />
-                  <span>Comparer</span>
-                  <Icon name="arrow" />
-                  <span>Valider</span>
-                </div>
-                <button
-                  className="connect-agent"
-                  onClick={() => setAgent('codex')}
-                >
-                  <Icon name="chat" />
-                  Choisir Codex
-                  <Icon name="arrow" />
-                </button>
-                <p className="privacy-note">
-                  Le mode manuel fonctionne sans compte IA. Vos changements
-                  restent sur ce poste.
-                </p>
+            <div className="token-editor">
+              <div className="editor-title">
+                <h3>Modifier un token</h3>
+                <span>
+                  {draft === String(current) ? 'Enregistré' : 'Brouillon'}
+                </span>
               </div>
-            ) : (
-              <>
-                <p className="agent-availability">
-                  {selectedAgent?.detail ?? 'Détection du CLI…'}
-                </p>
-                <div
-                  className="chat-log"
-                  aria-label="Conversation"
-                  aria-live="polite"
-                >
-                  {!chat.length && (
-                    <div className="chat-empty">
-                      <h3>Qu’allons-nous faire évoluer ?</h3>
-                      <p>
-                        Décrivez une intention. L’agent proposera des tokens,
-                        pas des commandes.
-                      </p>
-                    </div>
-                  )}
-                  {chat.map((c, i) => (
-                    <article className={`chat-message ${c.role}`} key={i}>
-                      <strong>{c.role === 'user' ? 'Vous' : 'Codex'}</strong>
-                      <p>{c.text}</p>
-                    </article>
-                  ))}
-                  {thinking && <p role="status">Codex prépare une réponse…</p>}
-                </div>
-                <form
-                  className="chat-composer"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    void sendMessage();
-                  }}
-                >
-                  <label className="field">
-                    Votre demande
-                    <textarea
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      maxLength={8000}
-                      placeholder="Quelle évolution voulez-vous explorer ?"
-                      disabled={thinking}
-                    />
-                  </label>
-                  <div className="composer-actions">
-                    <span>Aucun outil ni commande</span>
-                    <button
-                      className="studio-primary"
-                      disabled={
-                        thinking || !message.trim() || !selectedAgent?.available
-                      }
-                    >
-                      <Icon name="arrow" />
-                      {thinking ? 'Réflexion en cours…' : 'Envoyer à Codex'}
-                    </button>
-                    {thinking && (
-                      <button
-                        type="button"
-                        onClick={() => controller.current?.abort()}
+              <form
+                className="token-form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void proposeToken();
+                }}
+              >
+                <label className="field">
+                  Token
+                  <select
+                    value={key}
+                    onChange={(e) => setKey(e.target.value as TokenKey)}
+                  >
+                    {tokenKeys.map((k) => (
+                      <option key={k}>{k}</option>
+                    ))}
+                  </select>
+                </label>
+                <div className="field">
+                  <label htmlFor="token-value">Valeur</label>
+                  <div className="value-control">
+                    {state.tokens[key].$type === 'color' && (
+                      <input
+                        aria-label="Sélecteur de couleur"
+                        type="color"
+                        value={
+                          /^#[0-9a-fA-F]{6}$/.test(draft)
+                            ? draft
+                            : String(current)
+                        }
+                        onChange={(e) => setDraft(e.target.value)}
+                      />
+                    )}
+                    {state.tokens[key].$type === 'fontFamily' ? (
+                      <select
+                        id="token-value"
+                        aria-label="Valeur du token"
+                        aria-describedby="token-format"
+                        value={draft}
+                        onChange={(e) => setDraft(e.target.value)}
                       >
-                        Arrêter
-                      </button>
+                        {['system-ui', 'Arial', 'Georgia', 'Verdana'].map(
+                          (f) => (
+                            <option key={f}>{f}</option>
+                          ),
+                        )}
+                      </select>
+                    ) : (
+                      <input
+                        id="token-value"
+                        aria-label="Valeur du token"
+                        aria-describedby="token-format"
+                        value={draft}
+                        onChange={(e) => setDraft(e.target.value)}
+                        required
+                        type={
+                          state.tokens[key].$type === 'dimension'
+                            ? 'number'
+                            : 'text'
+                        }
+                        min={
+                          state.tokens[key].$type === 'dimension'
+                            ? 0
+                            : undefined
+                        }
+                        max={
+                          state.tokens[key].$type === 'dimension'
+                            ? 128
+                            : undefined
+                        }
+                        step={
+                          state.tokens[key].$type === 'dimension'
+                            ? 'any'
+                            : undefined
+                        }
+                        maxLength={20}
+                      />
                     )}
                   </div>
-                </form>
-                <p className="privacy-note cloud-warning">
-                  L’envoi à Codex inclut les tokens, workspace/PFE.md, le brief
-                  privé, DESIGN_RULES.md et 10 messages récents. Ne transmettez
-                  pas de données sensibles.
+                </div>
+                <button
+                  className="studio-primary"
+                  disabled={!boot || draft === String(current)}
+                >
+                  Proposer
+                </button>
+              </form>
+              {draft !== String(current) && (
+                <p className="draft-status" role="status">
+                  {recovered
+                    ? 'Brouillon récupéré dans cet onglet.'
+                    : 'Brouillon non enregistré.'}{' '}
+                  <button type="button" onClick={discard}>
+                    Abandonner le brouillon
+                  </button>
                 </p>
-              </>
-            )}
+              )}
+              <p className="token-hint" id="token-format">
+                {state.tokens[key].$type === 'color'
+                  ? '#RRGGBB · '
+                  : state.tokens[key].$type === 'dimension'
+                    ? 'Pixels, de 0 à 128 · '
+                    : ''}
+                Enregistrement après validation.
+              </p>
+              <p className="contrast" aria-live="polite">
+                Marque / texte sur marque :{' '}
+                <strong>
+                  {contrast(
+                    state.tokens['color.brand'].$value,
+                    state.tokens['color.onBrand'].$value,
+                  ).toFixed(2)}
+                  :1
+                </strong>{' '}
+                ·{' '}
+                {contrast(
+                  state.tokens['color.brand'].$value,
+                  state.tokens['color.onBrand'].$value,
+                ) >= 4.5
+                  ? 'AA texte courant'
+                  : 'Contraste à améliorer'}
+              </p>
+              {draftContrast !== undefined && draft !== String(current) && (
+                <p className="contrast" role="status">
+                  Contraste proposé :{' '}
+                  <strong>{draftContrast.toFixed(2)}:1</strong> ·{' '}
+                  {draftContrast >= 4.5
+                    ? 'AA texte courant'
+                    : 'Contraste à améliorer'}
+                  . Cette indication ne certifie pas tous les états du
+                  composant.
+                </p>
+              )}
+            </div>
+            <div className="agent-section">
+              <h3>
+                <Icon name="chat" />
+                Agent
+                <span className="agent-state">
+                  {agent === 'manual' ? 'Facultatif' : 'Codex'}
+                </span>
+              </h3>
+              <ProjectBrief />
+              <label className="field agent-mode">
+                Mode de travail
+                <select
+                  value={agent}
+                  onChange={(e) => setAgent(e.target.value)}
+                >
+                  <option value="manual">Manuel · sans compte IA</option>
+                  <option value="codex">Codex · expérimental qualifié</option>
+                  <option value="claude" disabled>
+                    Claude Code · non implémenté
+                  </option>
+                  <option value="gemini" disabled>
+                    Gemini CLI · non implémenté
+                  </option>
+                </select>
+              </label>
+              {agent === 'manual' ? (
+                <>
+                  <button
+                    className="connect-agent"
+                    onClick={() => setAgent('codex')}
+                  >
+                    <Icon name="chat" />
+                    Choisir Codex
+                    <Icon name="arrow" />
+                  </button>
+                  <p className="privacy-note">
+                    Le mode manuel fonctionne sans compte IA. Vos changements
+                    restent sur ce poste.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="agent-availability">
+                    {selectedAgent?.detail ?? 'Détection du CLI…'}
+                  </p>
+                  <div
+                    className="chat-log"
+                    aria-label="Conversation"
+                    aria-live="polite"
+                  >
+                    {!chat.length && (
+                      <div className="chat-empty">
+                        <h3>Qu’allons-nous faire évoluer ?</h3>
+                        <p>
+                          Décrivez une intention. L’agent proposera des tokens,
+                          pas des commandes.
+                        </p>
+                      </div>
+                    )}
+                    {chat.map((c, i) => (
+                      <article className={`chat-message ${c.role}`} key={i}>
+                        <strong>{c.role === 'user' ? 'Vous' : 'Codex'}</strong>
+                        <p>{c.text}</p>
+                      </article>
+                    ))}
+                    {thinking && (
+                      <p role="status">Codex prépare une réponse…</p>
+                    )}
+                  </div>
+                  <form
+                    className="chat-composer"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      void sendMessage();
+                    }}
+                  >
+                    <label className="field">
+                      Votre demande
+                      <textarea
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        maxLength={8000}
+                        placeholder="Quelle évolution voulez-vous explorer ?"
+                        disabled={thinking}
+                      />
+                    </label>
+                    <div className="composer-actions">
+                      <span>Aucun outil ni commande</span>
+                      <button
+                        className="studio-primary"
+                        disabled={
+                          thinking ||
+                          !message.trim() ||
+                          !selectedAgent?.available
+                        }
+                      >
+                        <Icon name="arrow" />
+                        {thinking ? 'Réflexion en cours…' : 'Envoyer à Codex'}
+                      </button>
+                      {thinking && (
+                        <button
+                          type="button"
+                          onClick={() => controller.current?.abort()}
+                        >
+                          Arrêter
+                        </button>
+                      )}
+                    </div>
+                  </form>
+                  <p className="privacy-note cloud-warning">
+                    L’envoi à Codex inclut les tokens, workspace/PFE.md, le
+                    brief privé, DESIGN_RULES.md et 10 messages récents. Ne
+                    transmettez pas de données sensibles.
+                  </p>
+                </>
+              )}
+            </div>
           </div>
           <div className="panel-foot">
             <Icon name="check" />
@@ -903,6 +1119,17 @@ export default function App() {
           </div>
         </section>
       </main>
+      {!agentOpen && (
+        <button
+          className="edit-fab"
+          aria-controls="agent-panel"
+          aria-expanded={false}
+          onClick={() => openEditor()}
+        >
+          <Icon name="edit" />
+          Modifier
+        </button>
+      )}
       <footer className="studio-footer">
         <span className="local-status">
           <span aria-hidden="true" />

@@ -85,19 +85,25 @@ contenant des espaces est accepté. N’utilisez ni `sudo` ni installation de se
 ## Atelier plein écran
 
 L’atelier occupe toute la fenêtre, sans défilement global. À partir de 1100 px,
-l’inventaire et les propriétés restent à gauche du canevas, l’agent facultatif à
-droite. **Composants** et **Aperçu** sont deux vues du même canevas. Le bouton
-**Agent** replie l’assistant ; **Agrandir le canevas** libère toute la zone de
-travail. Sur une fenêtre étroite, utilisez **Tokens**, **Composants**, **Aperçu**
-et **Agent** : les états et brouillons sont conservés. Seuls les contenus internes
-défilent. L’aperçu garde sa largeur CSS réelle, avec défilement local si nécessaire.
+la barre de gauche propose une recherche (composants et tokens), les familles de
+tokens et la liste des composants. Une famille affiche ses tokens dans le canevas ;
+un composant affiche sa page (définition sous le titre, aperçu réglable avec fond
+clair ou sombre, anatomie, propriétés, variantes) ; **Vue d’ensemble** présente les composants en cartes. Les textes de ces
+pages sont dans `app/client/componentDocs.ts`. **Design** et **Aperçu** sont deux
+vues du même canevas. Le bouton flottant
+**Modifier** ouvre le panneau de droite : édition manuelle d’un token, puis agent
+facultatif. **Agrandir le canevas** libère toute la zone de travail. Sur une fenêtre
+étroite, utilisez **Tokens**, **Design**, **Aperçu** et **Modifier** : les états
+et brouillons sont conservés. Seuls les contenus internes défilent. L’aperçu garde
+sa largeur CSS réelle, avec défilement local si nécessaire.
 
 [Product design reboot : audit Impeccable, trois explorations, captures et tests](docs/design-reboot/REPORT.md).
 La [refonte précédente](docs/UI_REDESIGN_REPORT.md) est conservée comme historique.
 
 ## Votre première boucle, en deux minutes
 
-1. Dans **Design System**, choisissez `color.brand`, remplacez la valeur par `#8A3B20`.
+1. À gauche, ouvrez **Couleurs** puis cliquez `brand` : le panneau **Modifier** s’ouvre.
+   Remplacez la valeur par `#8A3B20`.
 2. Cliquez **Proposer**. Le diff montre les valeurs et un spécimen avant/après, sans écriture.
 3. Cliquez **Valider et enregistrer**. Boutons, réservation et navigation changent dans les deux vues.
 4. Dans **Aperçu**, testez la réservation, puis les viewports 320, 375, 430 et 1024 px (défilement horizontal si nécessaire).

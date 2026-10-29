@@ -165,9 +165,9 @@ Une palette froide et légèrement violette, avec un accent iris réservé aux c
 
 La grammaire est celle de surfaces jointives : outils périphériques, objet de travail dominant et défilements internes. L'application occupe `100dvh`, sans défilement global. Le rythme réutilisable est la série d'espacement du frontmatter ; des demi-pas locaux règlent les commandes compactes.
 
-Dans l'atelier actuel, la barre mesure au minimum 52px. Le canevas flexible est encadré par un inventaire de 264px et un agent de 304px ; à partir de 1800px ces panneaux passent à 288px et 344px. Entre 1100px et 1199px ils se resserrent à 240px et 280px. L'agent se replie ; le mode canevas agrandi masque les deux outils. Ces mesures décrivent cette surface, pas une grille imposée à tout futur écran.
+Dans l'atelier actuel, la barre mesure au minimum 52px. Le canevas flexible suit une barre de navigation de 264px (recherche, familles de tokens, composants). Le panneau Modifier (304px) est replié par défaut derrière un bouton flottant ; il regroupe l'édition manuelle d'un token et l'agent facultatif. À partir de 1800px ces panneaux passent à 288px et 344px ; entre 1100px et 1199px, à 240px et 280px. Le mode canevas agrandi masque les deux outils. La vue d'ensemble range les composants en cartes, trois par ligne au maximum selon la largeur du canevas. Une page de composant (onglet Design) place la définition sous le titre, puis enchaîne aperçu réglable, anatomie, propriétés et variantes ; les réglages de l'aperçu ne sont jamais enregistrés. L'aperçu est sur fond blanc ; un switch soleil/lune passe à un fond sombre d'essai, sans tokens de thème sombre. Ces mesures décrivent cette surface, pas une grille imposée à tout futur écran. Ces mesures décrivent cette surface, pas une grille imposée à tout futur écran.
 
-Sous 1100px, quatre destinations explicites — Tokens, Composants, Aperçu, Agent — affichent une zone à la fois, en conservant les composants montés. Sous 600px, la barre se répartit sur deux lignes et les commandes de destination passent en icône plus texte. À faible hauteur (600px maximum), tout le panneau de tokens défile ; l'inventaire conserve une fenêtre de 280px et l'inspecteur n'est plus plafonné. Les dialogues restent bornés à la fenêtre. Le catalogue utilise deux colonnes quand son conteneur atteint 600px ; l'aperçu conserve sa largeur réelle dans sa zone défilante.
+Sous 1100px, quatre destinations explicites — Tokens, Design, Aperçu, Modifier — affichent une zone à la fois, en conservant les composants montés. Sous 600px, la barre se répartit sur deux lignes et les commandes de destination passent en icône plus texte. À faible hauteur (600px maximum), tout le panneau de tokens défile ; l'inventaire conserve une fenêtre de 280px et l'inspecteur n'est plus plafonné. Les dialogues restent bornés à la fenêtre. Le catalogue utilise deux colonnes quand son conteneur atteint 600px ; l'aperçu conserve sa largeur réelle dans sa zone défilante.
 
 ## Elevation & Depth
 
@@ -191,7 +191,7 @@ Le focus commun est un contour iris (2px), décalé de 2px ; sur l'encre il devi
 
 ### Cards / Containers
 
-Le chrome n'est pas une grille de cartes : inspecteur, inventaire et agent se distinguent par leur fond et leurs séparateurs. Le compositeur est une exception fonctionnelle : surface blanche, rayon `composer`, contour de commande et espacement `3`. Les cartes visibles dans la planche appartiennent au système édité, pas au chrome.
+Le chrome n'est pas une grille de cartes : navigation, canevas et panneau Modifier se distinguent par leur fond et leurs séparateurs. Exceptions fonctionnelles : les cartes de la vue d'ensemble, dont la vignette est un vrai rendu inerte du composant, et le bouton flottant Modifier, sans ombre, distingué par l'iris d'action. Le compositeur est une exception fonctionnelle : surface blanche, rayon `composer`, contour de commande et espacement `3`. Les cartes visibles dans la planche appartiennent au système édité, pas au chrome.
 
 ### Inputs / Fields
 

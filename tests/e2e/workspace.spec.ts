@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { contrast } from '../../app/shared/model.js';
+import { openComponent, openEditor } from './editor.js';
 
 async function expectWindowFit(page: import('@playwright/test').Page) {
   const dimensions = await page.evaluate(() => {
@@ -33,7 +34,9 @@ test('fenêtre entière, sans scroll global : desktop, tablette, téléphone et 
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/');
-  await page.getByRole('heading', { name: 'Tokens sémantiques' }).waitFor();
+  await page
+    .getByRole('heading', { name: 'Design System', exact: true })
+    .waitFor();
   await page.evaluate(() => document.fonts.ready);
   const measurements = [];
   for (const [width, height] of [
@@ -53,7 +56,9 @@ test('fenêtre entière, sans scroll global : desktop, tablette, téléphone et 
     await page.setViewportSize({ width, height });
     measurements.push(await expectWindowFit(page));
     await expect(page.locator('#ds-panel')).toBeVisible();
-    await expect(page.locator('#agent-panel')).toBeVisible({
+    // Panneau Modifier replié par défaut ; le bouton flottant l'ouvre en large.
+    await expect(page.locator('#agent-panel')).not.toBeVisible();
+    await expect(page.locator('.edit-fab')).toBeVisible({
       visible: width >= 1100,
     });
     await expect(page.locator('#canvas-panel')).toBeVisible({
@@ -89,8 +94,10 @@ test('scroll strictement local et viewport réel : largeur desktop accessible sa
     .toBe(0);
   await page
     .locator('.canvas-tabs')
-    .getByRole('button', { name: 'Composants', exact: true })
+    .getByRole('button', { name: 'Design', exact: true })
     .click();
+  // Une famille longue garantit un contenu plus haut que le canevas.
+  await page.getByRole('button', { name: /^Couleurs/ }).click();
   const scroll = page.locator('.ds-scroll');
   await scroll.hover();
   await page.mouse.wheel(0, 650);
@@ -99,6 +106,7 @@ test('scroll strictement local et viewport réel : largeur desktop accessible sa
     .toBeGreaterThan(0);
   await expectWindowFit(page);
   // Le dernier composant doit rester accessible, pas seulement être masqué par overflow:hidden.
+  await openComponent(page, 'Navigation');
   await page.locator('.catalogue .ds-nav').scrollIntoViewIfNeeded();
   await page
     .locator('.catalogue')
@@ -116,6 +124,11 @@ test('scroll strictement local et viewport réel : largeur desktop accessible sa
   await page
     .getByRole('combobox', { name: 'Viewport', exact: true })
     .selectOption('3');
+  // Panneau fermé, 1024 px tiennent dans le canevas ; ouvert, il faut défiler.
+  await expect
+    .poll(() => stage.evaluate((el) => el.scrollWidth - el.clientWidth))
+    .toBe(0);
+  await openEditor(page);
   await stage.evaluate((el) => {
     el.scrollLeft = el.scrollWidth;
   });
@@ -135,12 +148,12 @@ test('petit écran : trois panneaux accessibles, brouillon conservé et historiq
 }, info) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto('/');
-  await page.getByLabel('Valeur du token').fill('#704020');
   const nav = page.getByRole('navigation', { name: 'Panneaux de l’atelier' });
-  await nav.getByRole('button', { name: /Agent/ }).click();
+  await nav.getByRole('button', { name: 'Modifier', exact: true }).click();
   await expect(
-    page.getByRole('heading', { name: 'Agent', exact: true }),
+    page.getByRole('heading', { name: 'Modifier', exact: true }),
   ).toBeFocused();
+  await page.getByLabel('Valeur du token').fill('#704020');
   await page.getByText('Mon PFE · brief privé', { exact: true }).click();
   await expect(page.getByLabel('Nom du PFE', { exact: true })).toBeVisible();
   await expectWindowFit(page);
@@ -157,7 +170,7 @@ test('petit écran : trois panneaux accessibles, brouillon conservé et historiq
     .getByRole('combobox', { name: 'Viewport', exact: true })
     .selectOption('0');
   await page.screenshot({ path: info.outputPath('preview-mobile.png') });
-  await nav.getByRole('button', { name: 'Tokens', exact: true }).click();
+  await nav.getByRole('button', { name: 'Modifier', exact: true }).click();
   await expect(page.getByLabel('Valeur du token')).toHaveValue('#704020');
   await page.getByRole('button', { name: 'Proposer', exact: true }).click();
   await expect(
@@ -180,6 +193,7 @@ test('composants partagés : focus, hover, désactivé et validation native du f
   page,
 }) => {
   await page.goto('/');
+  await openComponent(page, 'Bouton');
   const main = page
     .locator('.catalogue')
     .getByRole('button', { name: 'Action principale', exact: true });
@@ -220,18 +234,25 @@ test('canevas dominant : replier l’agent et agrandir conserve les états inter
   page,
 }) => {
   await page.goto('/');
+  await openComponent(page, 'Carte atelier');
   const card = page
     .locator('.catalogue')
     .getByRole('button', { name: 'Réserver une place', exact: true });
   await card.click();
   const canvas = page.locator('#canvas-panel');
-  const before = (await canvas.boundingBox())!.width;
+  const closed = (await canvas.boundingBox())!.width;
+  await page.locator('.edit-fab').click();
+  await expect(
+    page.getByRole('heading', { name: 'Modifier', exact: true }),
+  ).toBeFocused();
+  expect((await canvas.boundingBox())!.width).toBeLessThan(closed);
+  await page.getByLabel('Valeur du token').fill('#554433');
   await page
-    .getByRole('button', { name: 'Afficher ou masquer l’agent' })
+    .getByRole('button', { name: 'Fermer le panneau Modifier' })
     .click();
   await expect(page.locator('#agent-panel')).not.toBeVisible();
-  expect((await canvas.boundingBox())!.width).toBeGreaterThan(before);
-  await page.getByLabel('Valeur du token').fill('#554433');
+  await expect(page.locator('.edit-fab')).toBeFocused();
+  expect((await canvas.boundingBox())!.width).toBe(closed);
   await page.getByRole('button', { name: 'Agrandir le canevas' }).click();
   await expect(page.locator('#ds-panel')).not.toBeVisible();
   await expectWindowFit(page);
@@ -241,6 +262,7 @@ test('canevas dominant : replier l’agent et agrandir conserve les états inter
       .getByRole('button', { name: 'Réservation confirmée ✓' }),
   ).toBeVisible();
   await page.getByRole('button', { name: 'Agrandir le canevas' }).click();
+  await openEditor(page);
   await expect(page.getByLabel('Valeur du token')).toHaveValue('#554433');
   await page
     .locator('.canvas-tabs')
@@ -253,7 +275,7 @@ test('canevas dominant : replier l’agent et agrandir conserve les états inter
   await frame.getByRole('button', { name: 'Favoris', exact: true }).click();
   await page
     .locator('.canvas-tabs')
-    .getByRole('button', { name: 'Composants', exact: true })
+    .getByRole('button', { name: 'Design', exact: true })
     .click();
   await page
     .locator('.canvas-tabs')
@@ -277,6 +299,8 @@ test('fenêtre basse : inventaire, propriétés et refus restent accessibles par
   ]) {
     await page.setViewportSize({ width, height });
     await page.goto('/');
+    // La famille ouvre ses tokens dans le canevas, le token ouvre Modifier.
+    await page.getByRole('button', { name: /^Couleurs/ }).click();
     await page
       .getByRole('button', { name: 'Sélectionner color.brand', exact: true })
       .click();
@@ -288,17 +312,18 @@ test('fenêtre basse : inventaire, propriétés et refus restent accessibles par
     await page.keyboard.press('Escape');
     await expectWindowFit(page);
     await page.getByRole('button', { name: 'Abandonner le brouillon' }).click();
-    await page.getByLabel('Rechercher un token').fill('no-such-token');
+    await page
+      .getByRole('navigation', { name: 'Panneaux de l’atelier' })
+      .getByRole('button', { name: 'Tokens', exact: true })
+      .click();
+    await page
+      .getByLabel('Rechercher un composant ou un token')
+      .fill('no-such-token');
     await expect(
-      page.getByText('Aucun token trouvé.', { exact: true }),
+      page.getByText('Aucun résultat.', { exact: true }),
     ).toBeVisible();
     await page.getByRole('button', { name: 'Effacer la recherche' }).click();
-    await expect(
-      page.getByRole('button', {
-        name: 'Sélectionner color.brand',
-        exact: true,
-      }),
-    ).toBeVisible();
+    await expect(page.getByRole('button', { name: /^Couleurs/ })).toBeVisible();
   }
 });
 
@@ -332,6 +357,7 @@ test('agent : conversation synthétique clairement isolée, erreur et reprise sa
     });
   });
   await page.goto('/');
+  await openEditor(page);
   const before = await (await page.request.get('/api/state')).json();
   await page
     .getByRole('combobox', { name: 'Mode de travail' })
@@ -367,6 +393,7 @@ test('contrastes du chrome : texte et contours nécessaires à l’identificatio
   page,
 }) => {
   await page.goto('/');
+  await openEditor(page);
   const hex = (rgb: string) =>
     '#' +
     rgb
