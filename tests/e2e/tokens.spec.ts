@@ -1,11 +1,11 @@
 import { test, expect } from '@playwright/test';
-import { openEditor } from './editor.js';
+import { openCreator, openEditor } from './editor.js';
 
 test('ajout et suppression de tokens : diff, rechargement, annulation, alerte', async ({
   page,
 }) => {
   await page.goto('/');
-  await openEditor(page);
+  await openCreator(page);
   const state = async () => (await page.request.get('/api/state')).json();
   const start = await state();
   const dialog = page.locator('dialog[aria-labelledby="diff-title"]');
@@ -83,7 +83,7 @@ test('ajout et suppression de tokens : diff, rechargement, annulation, alerte', 
   );
 
   // Police libre : une police absente est signalée avant toute proposition.
-  await openEditor(page);
+  await openCreator(page);
   await page.locator('.add-token select').selectOption({ index: 1 });
   await page.locator('#new-token-value').fill('Police Inexistante Test');
   await expect(page.locator('.add-token')).toContainText(

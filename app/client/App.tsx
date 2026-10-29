@@ -141,6 +141,8 @@ export default function App() {
     'catalogue',
   );
   const [agentOpen, setAgentOpen] = useState(false);
+  // Panneau de création : même colonne que Modifier, un seul ouvert à la fois.
+  const [createOpen, setCreateOpen] = useState(false);
   const [focusCanvas, setFocusCanvas] = useState(false);
   function navigatePanel(id: string) {
     setActivePanel(id);
@@ -155,6 +157,7 @@ export default function App() {
     setFocusCanvas(false);
     if (matchMedia('(max-width: 1099px)').matches) navigatePanel('agent');
     else {
+      setCreateOpen(false);
       setAgentOpen(true);
       if (!k)
         requestAnimationFrame(() =>
@@ -172,6 +175,23 @@ export default function App() {
     setAgentOpen(false);
     requestAnimationFrame(() =>
       document.querySelector<HTMLElement>('.edit-fab')?.focus(),
+    );
+  }
+  function openCreator() {
+    setFocusCanvas(false);
+    if (matchMedia('(max-width: 1099px)').matches) navigatePanel('create');
+    else {
+      setAgentOpen(false);
+      setCreateOpen(true);
+      requestAnimationFrame(() =>
+        document.getElementById('create-title')?.focus(),
+      );
+    }
+  }
+  function closeCreator() {
+    setCreateOpen(false);
+    requestAnimationFrame(() =>
+      document.querySelector<HTMLElement>('.create-fab')?.focus(),
     );
   }
   const historyDialog = useRef<HTMLDialogElement>(null);
@@ -501,6 +521,7 @@ export default function App() {
             ['canvas', 'Design', 'layers'],
             ['mobile', 'Aperçu', 'phone'],
             ['agent', 'Modifier', 'edit'],
+            ['create', 'Créer', 'plus'],
           ] as const
         ).map(([id, label, icon]) => (
           <button
@@ -516,7 +537,7 @@ export default function App() {
       </nav>
       <main
         className="studio-grid"
-        data-agent-open={agentOpen}
+        data-agent-open={agentOpen || createOpen}
         data-focus={focusCanvas}
       >
         <section
@@ -861,6 +882,7 @@ export default function App() {
           id="agent-panel"
           className="panel agent-panel"
           data-active={activePanel === 'agent'}
+          data-open={agentOpen}
           aria-labelledby="agent-title"
         >
           <div className="panel-heading">
@@ -1008,11 +1030,6 @@ export default function App() {
                 </p>
               )}
             </div>
-            <AddTokenForm
-              tokens={state.tokens}
-              disabled={!boot}
-              onPropose={proposeChanges}
-            />
             <div className="agent-section">
               <h3>
                 <Icon name="chat" />
@@ -1136,17 +1153,61 @@ export default function App() {
             Aucune écriture sans validation
           </div>
         </section>
-      </main>
-      {!agentOpen && (
-        <button
-          className="edit-fab"
-          aria-controls="agent-panel"
-          aria-expanded={false}
-          onClick={() => openEditor()}
+        <section
+          id="create-panel"
+          className="panel agent-panel create-panel"
+          data-active={activePanel === 'create'}
+          data-open={createOpen}
+          aria-labelledby="create-title"
         >
-          <Icon name="edit" />
-          Modifier
-        </button>
+          <div className="panel-heading">
+            <h2 id="create-title" tabIndex={-1}>
+              <Icon name="plus" />
+              Créer un token
+            </h2>
+            <button
+              className="icon-button close-editor"
+              aria-label="Fermer le panneau Créer token"
+              title="Fermer le panneau Créer token"
+              onClick={closeCreator}
+            >
+              <Icon name="close" />
+            </button>
+          </div>
+          <div className="panel-body">
+            <AddTokenForm
+              tokens={state.tokens}
+              disabled={!boot}
+              onPropose={proposeChanges}
+            />
+          </div>
+          <div className="panel-foot">
+            <Icon name="check" />
+            Aucune écriture sans validation
+          </div>
+        </section>
+      </main>
+      {!agentOpen && !createOpen && (
+        <div className="fab-group">
+          <button
+            className="create-fab"
+            aria-controls="create-panel"
+            aria-expanded={false}
+            onClick={openCreator}
+          >
+            <Icon name="plus" />
+            Créer token
+          </button>
+          <button
+            className="edit-fab"
+            aria-controls="agent-panel"
+            aria-expanded={false}
+            onClick={() => openEditor()}
+          >
+            <Icon name="edit" />
+            Modifier
+          </button>
+        </div>
       )}
       <footer className="studio-footer">
         <span className="local-status">

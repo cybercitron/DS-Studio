@@ -7,6 +7,7 @@ const paths = {
   close: 'm6 6 12 12M6 18 18 6',
   arrow: 'M5 12h14m-6-6 6 6-6 6',
   check: 'm5 12 4 4L19 6',
+  plus: 'M12 5v14M5 12h14',
   phone:
     'M7 2h10a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Zm3 16h4',
   edit: 'M4 20h4L19 9l-4-4L4 16v4Zm9-13 4 4',

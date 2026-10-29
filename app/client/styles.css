@@ -1562,7 +1562,7 @@ ins {
   .panel-nav {
     flex: none;
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     border-bottom: 1px solid var(--studio-line);
     background: white;
     padding: 4px 8px;
@@ -2141,4 +2141,42 @@ ins {
 .diff-absent {
   font-style: italic;
   color: var(--studio-muted);
+}
+/* Boutons flottants « Créer token » et « Modifier », un seul panneau latéral ouvert. */
+.fab-group {
+  position: fixed;
+  right: 24px;
+  bottom: 44px;
+  z-index: 2;
+  display: flex;
+  gap: 12px;
+}
+.fab-group .edit-fab {
+  position: static;
+}
+.create-fab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--studio-accent);
+  border-radius: 22px;
+  background: var(--studio-surface);
+  color: var(--studio-accent);
+  font-weight: 600;
+}
+.create-fab:hover {
+  background: var(--studio-selected);
+}
+.create-fab .icon {
+  width: 18px;
+}
+.studio-grid > .agent-panel[data-open='false'] {
+  display: none;
+}
+@media (max-width: 1099px) {
+  .fab-group {
+    display: none;
+  }
 }

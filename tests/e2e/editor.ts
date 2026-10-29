@@ -27,3 +27,18 @@ export async function openComponent(page: Page, name: string) {
     page.locator('.canvas-document-heading h3', { hasText: name }),
   ).toBeVisible();
 }
+
+// Le panneau « Créer token » remplace Modifier dans la colonne de droite.
+export async function openCreator(page: Page) {
+  await page.locator('#ds-panel').waitFor();
+  const panel = page.locator('#create-panel');
+  if (await panel.isVisible()) return;
+  const fab = page.locator('.create-fab');
+  if (!(await fab.isVisible()))
+    await page
+      .getByRole('button', { name: 'Fermer le panneau Modifier' })
+      .click();
+  await page.locator('.create-fab').click();
+  await expect(panel).toBeVisible();
+  await expect(page.locator('#agent-panel')).toBeHidden();
+}
