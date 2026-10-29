@@ -34,10 +34,11 @@ Idées de features et tâches à venir. Les décisions tranchées vont dans DECI
   Limite : survol et focus restent à tester à la souris et au clavier.
   Emplacement prévu : aperçu interactif de l'onglet Design.
 
-- **Générateur de palettes accessibles** (voir la décision du 28/10).
-  1) Générer, ajuster et exporter une palette à partir d'une teinte hex ;
-  2) bouton « Ajouter comme tokens primitives », via le diff.
-  Emplacement prévu : bouton d'outil dans la barre de navigation.
+- **Générateur de palettes accessibles** (voir les décisions du 28/10 et du 29/10).
+  1) [x] Générer, ajuster et exporter une palette à partir d'une teinte hex
+     (fait le 29/10 : bouton « Palette » de la barre du haut, testé) ;
+  2) [ ] bouton « Ajouter comme tokens primitives », via le diff ;
+  3) [ ] mode sombre : seconde échelle avec les mêmes règles.
   L'ajout de tokens est fait (29/10) : l'étape 2 est débloquée.
 
 ### Priorité moyenne

@@ -175,3 +175,32 @@ locaux validés. Claude et Gemini ne sont pas activés sans qualification.
   n'est pas téléchargée : elle doit être installée sur chaque poste. Une ancienne
   version de l'atelier ne lit plus le fichier v2 (l'archive v1 reste). La liste
   des composants par token est tenue à la main (`app/client/tokenUsage.ts`).
+
+## 2026-10-29 — Générateur de palettes : réglages plutôt qu'usages imposés
+
+- **Problème** : le générateur doit marcher avec n'importe quelle couleur, pas
+  seulement celles du CAPC, comme un Scale amélioré.
+- **Options explorées** : suggérer un usage par nuance, par groupes façon Radix
+  (fonds, composants, bordures, couleurs pleines, texte) ; ou ne garder que le
+  nombre de nuances et des règles de contraste.
+- **Décision** :
+  - De 3 à 12 nuances, 10 par défaut (050 → 900), sinon numérotées de 100 en 100.
+  - La couleur de départ est gardée intacte, au milieu de l'échelle (le 500 sur
+    10 nuances).
+  - Règles « nuance A ≥ ratio sur nuance B » réglables avant le calcul ; l'outil
+    ajuste les autres nuances. Une règle impossible avec la couleur de départ est
+    signalée avec le meilleur ratio atteignable, sans toucher à la couleur.
+  - Décalage de teinte selon la famille de la couleur de départ (12 familles,
+    chacune avec sa direction en clair et en foncé : le rouge tire vers l'orange
+    en clair et vers le pourpre en foncé, le jaune vers le vert et vers l'orange…),
+    pas de 5°, 8° puis 12° autour du 500, réglables. Pas de décalage pour un gris.
+  - Ouvert par le bouton « Palette » de la barre du haut ; export JSON seulement.
+- **Raison** : décider de l'usage de chaque nuance dès sa création prête à
+  confusion. Les règles gardent l'accessibilité sous contrôle sans figer l'usage.
+- **Preuve** : sur le jaune `#FFFF0A`, la règle 500 ≥ 3:1 est signalée
+  impossible, la couleur reste intacte et les règles de texte passent ; une
+  retouche sous le seuil déclenche l'alerte. 48 tests unitaires et 21 tests de
+  parcours passent ; vérifié dans l'atelier, à 320 px et en grand écran.
+- **Limite connue** : pas encore de mode sombre ni d'ajout comme tokens. Au-delà
+  du 200 et du 800, le décalage reste plafonné à 12°. Les jaunes foncés gardent
+  une pointe kaki au réglage par défaut. Le jugement esthétique reste le mien.

@@ -11,6 +11,7 @@ import Icon from './Icon.js';
 import ComponentPage from './ComponentPage.js';
 import { componentDocs } from './componentDocs.js';
 import ProjectBrief from './ProjectBrief.js';
+import { PaletteTool } from './PaletteTool.js';
 import { AddTokenForm, FontHint, RemovalWarning } from './TokenTools.js';
 import { tokenUsage } from './tokenUsage.js';
 import { useTokenDraft } from './useTokenDraft.js';
@@ -137,9 +138,9 @@ export default function App() {
   const controller = useRef<AbortController | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [activePanel, setActivePanel] = useState('ds');
-  const [canvasView, setCanvasView] = useState<'catalogue' | 'preview'>(
-    'catalogue',
-  );
+  const [canvasView, setCanvasView] = useState<
+    'catalogue' | 'preview' | 'palette'
+  >('catalogue');
   const [agentOpen, setAgentOpen] = useState(false);
   // Panneau de création : même colonne que Modifier, un seul ouvert à la fois.
   const [createOpen, setCreateOpen] = useState(false);
@@ -388,6 +389,22 @@ export default function App() {
           <span>Design System du Capc</span>
         </div>
         <div className="intro-actions">
+          <button
+            className="palette-trigger"
+            aria-pressed={canvasView === 'palette'}
+            aria-controls="palette-view"
+            onClick={() => {
+              setFocusCanvas(false);
+              navigatePanel('canvas');
+              setCanvasView('palette');
+              requestAnimationFrame(() =>
+                document.getElementById('palette-title')?.focus(),
+              );
+            }}
+          >
+            <Icon name="palette" />
+            <span>Palette</span>
+          </button>
           <button
             aria-label="Exporter les tokens"
             onClick={() => void perform(exportTokens)}
@@ -822,6 +839,26 @@ export default function App() {
               </ul>
             )}
           </div>
+          <section
+            id="palette-view"
+            className="palette-scroll canvas-view"
+            hidden={canvasView !== 'palette'}
+            aria-labelledby="palette-title"
+          >
+            <div className="canvas-document-heading">
+              <div>
+                <h3 id="palette-title" tabIndex={-1}>
+                  Générateur de palettes accessibles
+                </h3>
+                <p>
+                  Une couleur de départ, un nombre de nuances et vos règles de
+                  contraste.
+                </p>
+              </div>
+              <span>Brouillon non enregistré</span>
+            </div>
+            <PaletteTool initial={brand} />
+          </section>
           <section
             id="mobile-panel"
             className="mobile-panel canvas-view"
