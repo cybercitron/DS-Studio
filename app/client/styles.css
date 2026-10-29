@@ -2102,3 +2102,43 @@ ins {
     max-height: 60%;
   }
 }
+/* Ajout et suppression de tokens : panneau Modifier et diff. */
+.remove-token {
+  margin-top: 12px;
+  width: 100%;
+  color: #a02541;
+  border-color: #e2b8c2;
+  background: var(--studio-surface);
+}
+.remove-token:hover:not(:disabled) {
+  background: #fbf0f2;
+}
+.name-control {
+  align-items: center;
+}
+.name-control code {
+  flex: none;
+  font-size: 12px;
+  color: var(--studio-muted);
+}
+.removal-warning {
+  margin: 12px 0;
+  padding: 10px 12px;
+  border-left: 3px solid #a02541;
+  background: #fbf0f2;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.removal-warning h3 {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: #a02541;
+}
+.removal-warning ul {
+  margin: 0;
+  padding-inline-start: 18px;
+}
+.diff-absent {
+  font-style: italic;
+  color: var(--studio-muted);
+}

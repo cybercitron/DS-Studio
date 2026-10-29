@@ -141,3 +141,37 @@ locaux validés. Claude et Gemini ne sont pas activés sans qualification.
   lisible sur fond clair ne sera jamais vif. Pour les couleurs très claires et
   vives (jaune, cyan), les rôles de texte sur fond clair tombent dans les nuances
   les plus foncées. Le jugement esthétique reste le mien.
+
+## 2026-10-29 — Ajout et suppression de tokens (schéma version 2)
+
+- **Problème** : la liste des tokens était figée (18 tokens, 4 polices). La charte
+  du CAPC (8 couleurs déclinées en palettes de 050 à 900) n'y entre pas. C'est un
+  prérequis du second temps du générateur de palettes, puis des alias et des modes.
+- **Options explorées** : nommage libre ou encadré par famille ; suppression d'un
+  token utilisé par un composant refusée ou permise après alerte ; polices par
+  nom libre, liste élargie ou import de fichier ; migration au démarrage ou au
+  premier enregistrement.
+- **Décision** :
+  - Nom encadré : une famille (`color.`, `space.`, `radius.`, `font.`) puis des
+    mots ou des numéros séparés par des points (ex. `color.rouge.500`). La famille
+    fixe le type ; `font.` accepte une police ou une taille.
+  - Suppression permise après une alerte qui liste les composants touchés. Un
+    token de base supprimé prend une valeur par défaut voyante : fuchsia
+    `#FF00FF` pour une couleur, 0 pour une dimension, police système pour une police.
+  - Polices : nom libre d'une police installée, police de secours automatique,
+    alerte si elle est introuvable sur l'ordinateur.
+  - Migration de la version 1 vers la version 2 au démarrage ; l'original est
+    archivé intact dans `.ds-studio/` (`state-v1-archive-….json`).
+  - Ajout et suppression passent par le même diff, la même validation et la même
+    annulation que les modifications.
+- **Raison** : le rangement par famille garde la barre de gauche lisible et reste
+  proche des variables Figma. Le fuchsia rend un oubli impossible à rater. La
+  migration au démarrage évite de gérer deux formats.
+- **Preuve** : 37 tests unitaires (dont la migration d'un état v1 à 4 révisions
+  et le refus d'un journal incohérent), 20 tests de parcours, essai réel sur une
+  copie de mes données : ajout de `color.rouge.500`, rechargement, suppression de
+  `color.brand` (composants en fuchsia), annulation qui le rétablit.
+- **Limite connue** : l'agent Codex ne crée ni ne supprime de tokens. Une police
+  n'est pas téléchargée : elle doit être installée sur chaque poste. Une ancienne
+  version de l'atelier ne lit plus le fichier v2 (l'archive v1 reste). La liste
+  des composants par token est tenue à la main (`app/client/tokenUsage.ts`).

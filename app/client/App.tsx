@@ -11,6 +11,8 @@ import Icon from './Icon.js';
 import ComponentPage from './ComponentPage.js';
 import { componentDocs } from './componentDocs.js';
 import ProjectBrief from './ProjectBrief.js';
+import { AddTokenForm, FontHint, RemovalWarning } from './TokenTools.js';
+import { tokenUsage } from './tokenUsage.js';
 import { useTokenDraft } from './useTokenDraft.js';
 import {
   bootstrap,
@@ -21,9 +23,11 @@ import {
   type Bootstrap,
 } from './api.js';
 import {
-  applyChanges,
+  applyPatches,
   contrast,
-  tokenKeys,
+  isBaseToken,
+  resolvedValue,
+  type Change,
   type Proposal,
   type State,
   type TokenKey,
@@ -105,7 +109,7 @@ export default function App() {
       const saved = JSON.parse(
         sessionStorage.getItem('ds-studio-token-draft-v2') || 'null',
       );
-      if (tokenKeys.includes(saved?.key)) return saved.key;
+      if (typeof saved?.key === 'string') return saved.key;
     } catch {
       /* Facultatif. */
     }
@@ -113,7 +117,7 @@ export default function App() {
   });
   const { draft, setDraft, recovered, discard } = useTokenDraft(
     key,
-    state?.tokens[key].$value,
+    state?.tokens[key]?.$value,
   );
   const [search, setSearch] = useState('');
   const [selection, setSelection] = useState<Selection>({ kind: 'all' });
@@ -189,7 +193,11 @@ export default function App() {
     if (historyOpen && !proposal) historyDialog.current?.showModal();
     else historyDialog.current?.close();
   }, [historyOpen, proposal]);
-  const current = state?.tokens[key].$value;
+  const current = state?.tokens[key]?.$value;
+  // Token supprimé (ici, par import ou dans un autre onglet) : revenir au premier.
+  useEffect(() => {
+    if (state && !state.tokens[key]) setKey(Object.keys(state.tokens)[0]);
+  }, [state, key]);
 
   useEffect(() => {
     if (proposal) {
@@ -209,18 +217,22 @@ export default function App() {
       setError((e as Error).message);
     }
   }
-  async function proposeToken() {
+  async function proposeChanges(changes: Change[]) {
     if (!state) return;
     await perform(async () => {
-      const token = state.tokens[key];
-      const value = token.$type === 'dimension' ? Number(draft) : draft;
       setProposal(
         await request<Proposal>('proposals', {
           revision: state.revision,
-          changes: [{ key, value }],
+          changes,
         }),
       );
     });
+  }
+  async function proposeToken() {
+    const token = state?.tokens[key];
+    if (!token) return;
+    const value = token.$type === 'dimension' ? Number(draft) : draft;
+    await proposeChanges([{ key, value }]);
   }
   async function accept() {
     if (!proposal) return;
@@ -279,16 +291,18 @@ export default function App() {
         <p>Lancez le serveur local puis rechargez cette page.</p>
       </main>
     );
+  const tokenKeys = Object.keys(state.tokens);
+  const editType = state.tokens[key]?.$type;
+  const brand = String(resolvedValue(state.tokens, 'color.brand'));
+  const onBrand = String(resolvedValue(state.tokens, 'color.onBrand'));
   const selectedAgent = agents.find((a) => a.id === agent);
   const staleProposal = !!proposal && proposal.revision !== state.revision;
   const draftContrast =
     /^#[0-9a-fA-F]{6}$/.test(draft) &&
     (key === 'color.brand' || key === 'color.onBrand')
       ? contrast(
-          key === 'color.brand' ? draft : state.tokens['color.brand'].$value,
-          key === 'color.onBrand'
-            ? draft
-            : state.tokens['color.onBrand'].$value,
+          key === 'color.brand' ? draft : brand,
+          key === 'color.onBrand' ? draft : onBrand,
         )
       : undefined;
   const query = search.trim().toLowerCase();
@@ -450,7 +464,17 @@ export default function App() {
               <div>
                 <strong>Révision {event.revision}</strong> · {event.source} ·{' '}
                 <time>{new Date(event.date).toLocaleString('fr-FR')}</time>
-                <p>{event.patches.map((p) => p.key).join(', ')}</p>
+                <p>
+                  {event.patches
+                    .map((p) =>
+                      !p.before
+                        ? `${p.key} (ajout)`
+                        : !p.after
+                          ? `${p.key} (suppression)`
+                          : p.key,
+                    )
+                    .join(', ')}
+                </p>
               </div>
               <button
                 onClick={() =>
@@ -882,7 +906,7 @@ export default function App() {
                 <div className="field">
                   <label htmlFor="token-value">Valeur</label>
                   <div className="value-control">
-                    {state.tokens[key].$type === 'color' && (
+                    {editType === 'color' && (
                       <input
                         aria-label="Sélecteur de couleur"
                         type="color"
@@ -894,20 +918,17 @@ export default function App() {
                         onChange={(e) => setDraft(e.target.value)}
                       />
                     )}
-                    {state.tokens[key].$type === 'fontFamily' ? (
-                      <select
+                    {editType === 'fontFamily' ? (
+                      <input
                         id="token-value"
                         aria-label="Valeur du token"
                         aria-describedby="token-format"
                         value={draft}
                         onChange={(e) => setDraft(e.target.value)}
-                      >
-                        {['system-ui', 'Arial', 'Georgia', 'Verdana'].map(
-                          (f) => (
-                            <option key={f}>{f}</option>
-                          ),
-                        )}
-                      </select>
+                        list="font-suggestions"
+                        required
+                        maxLength={64}
+                      />
                     ) : (
                       <input
                         id="token-value"
@@ -916,26 +937,10 @@ export default function App() {
                         value={draft}
                         onChange={(e) => setDraft(e.target.value)}
                         required
-                        type={
-                          state.tokens[key].$type === 'dimension'
-                            ? 'number'
-                            : 'text'
-                        }
-                        min={
-                          state.tokens[key].$type === 'dimension'
-                            ? 0
-                            : undefined
-                        }
-                        max={
-                          state.tokens[key].$type === 'dimension'
-                            ? 128
-                            : undefined
-                        }
-                        step={
-                          state.tokens[key].$type === 'dimension'
-                            ? 'any'
-                            : undefined
-                        }
+                        type={editType === 'dimension' ? 'number' : 'text'}
+                        min={editType === 'dimension' ? 0 : undefined}
+                        max={editType === 'dimension' ? 128 : undefined}
+                        step={editType === 'dimension' ? 'any' : undefined}
                         maxLength={20}
                       />
                     )}
@@ -959,27 +964,35 @@ export default function App() {
                 </p>
               )}
               <p className="token-hint" id="token-format">
-                {state.tokens[key].$type === 'color'
+                {editType === 'color'
                   ? '#RRGGBB · '
-                  : state.tokens[key].$type === 'dimension'
+                  : editType === 'dimension'
                     ? 'Pixels, de 0 à 128 · '
                     : ''}
                 Enregistrement après validation.
               </p>
+              {editType === 'fontFamily' && <FontHint name={draft} />}
+              <button
+                type="button"
+                className="remove-token"
+                disabled={!boot || !editType}
+                onClick={() => void proposeChanges([{ key, remove: true }])}
+              >
+                Supprimer {key}…
+              </button>
+              <p className="token-hint">
+                {isBaseToken(key)
+                  ? `Utilisé par ${tokenUsage[key].length > 4 ? 'tous les composants' : tokenUsage[key].join(', ')}. Le diff détaille l’effet avant validation.`
+                  : 'Aucun composant ne l’utilise. Suppression annulable dans l’historique.'}
+              </p>
               <p className="contrast" aria-live="polite">
                 Marque / texte sur marque :{' '}
                 <strong>
-                  {contrast(
-                    state.tokens['color.brand'].$value,
-                    state.tokens['color.onBrand'].$value,
-                  ).toFixed(2)}
+                  {contrast(brand, onBrand).toFixed(2)}
                   :1
                 </strong>{' '}
                 ·{' '}
-                {contrast(
-                  state.tokens['color.brand'].$value,
-                  state.tokens['color.onBrand'].$value,
-                ) >= 4.5
+                {contrast(brand, onBrand) >= 4.5
                   ? 'AA texte courant'
                   : 'Contraste à améliorer'}
               </p>
@@ -995,6 +1008,11 @@ export default function App() {
                 </p>
               )}
             </div>
+            <AddTokenForm
+              tokens={state.tokens}
+              disabled={!boot}
+              onPropose={proposeChanges}
+            />
             <div className="agent-section">
               <h3>
                 <Icon name="chat" />
@@ -1171,12 +1189,7 @@ export default function App() {
             </div>
             <div>
               <h3>Après · non enregistré</h3>
-              <DSProvider
-                tokens={applyChanges(
-                  state.tokens,
-                  proposal.patches.map((p) => ({ key: p.key, value: p.after })),
-                )}
-              >
+              <DSProvider tokens={applyPatches(state.tokens, proposal.patches)}>
                 <Button>Action principale</Button>
               </DSProvider>
             </div>
@@ -1188,6 +1201,7 @@ export default function App() {
             proposés.
           </p>
         )}
+        {proposal && <RemovalWarning patches={proposal.patches} />}
         <div className="diff-scroll">
           <table>
             <thead>
@@ -1202,24 +1216,36 @@ export default function App() {
                 <tr key={p.key}>
                   <th>{p.key}</th>
                   <td>
-                    {state.tokens[p.key].$type === 'color' && (
-                      <span
-                        className="diff-swatch"
-                        style={{ background: String(p.before) }}
-                        aria-hidden="true"
-                      />
+                    {p.before ? (
+                      <>
+                        {p.before.$type === 'color' && (
+                          <span
+                            className="diff-swatch"
+                            style={{ background: p.before.$value }}
+                            aria-hidden="true"
+                          />
+                        )}
+                        <del>{p.before.$value}</del>
+                      </>
+                    ) : (
+                      <span className="diff-absent">Nouveau token</span>
                     )}
-                    <del>{p.before}</del>
                   </td>
                   <td>
-                    {state.tokens[p.key].$type === 'color' && (
-                      <span
-                        className="diff-swatch"
-                        style={{ background: String(p.after) }}
-                        aria-hidden="true"
-                      />
+                    {p.after ? (
+                      <>
+                        {p.after.$type === 'color' && (
+                          <span
+                            className="diff-swatch"
+                            style={{ background: p.after.$value }}
+                            aria-hidden="true"
+                          />
+                        )}
+                        <ins>{p.after.$value}</ins>
+                      </>
+                    ) : (
+                      <del className="diff-absent">Supprimé</del>
                     )}
-                    <ins>{p.after}</ins>
                   </td>
                 </tr>
               ))}

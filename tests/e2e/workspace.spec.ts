@@ -404,7 +404,7 @@ test('contrastes du chrome : texte et contours nécessaires à l’identificatio
   for (const selector of [
     '.token-search input',
     '#token-value',
-    '.token-form select',
+    '.token-form select >> nth=0',
   ]) {
     const colors = await page.locator(selector).evaluate((el) => {
       const s = getComputedStyle(el);

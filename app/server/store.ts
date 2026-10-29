@@ -4,15 +4,16 @@ import { atomicWrite, readPrivate } from './files.js';
 import { createHash, randomUUID } from 'node:crypto';
 import {
   applyChanges,
+  applyPatches,
   diff,
-  stateSchema,
+  migrateState,
+  sameToken,
   tokensSchema,
+  type Change,
   type State,
   type Tokens,
   type Proposal,
   type Revision,
-  type TokenKey,
-  type TokenValue,
 } from '../shared/model.js';
 
 export class StudioError extends Error {
@@ -42,16 +43,19 @@ export class Store {
       throw new StudioError('Dossier de données symbolique refusé.', 500);
     try {
       const raw = await readPrivate(this.file);
-      this.state = parseStoredState(raw);
+      const { state, from } = readStoredState(raw);
+      this.state = state;
       this.digest = this.hash(raw);
+      if (from === 1) await this.migrate(raw);
     } catch (e) {
+      if (e instanceof MigrationError) throw e;
       if ((e as NodeJS.ErrnoException).code !== 'ENOENT')
         throw new StudioError(
           'state.json invalide ou inaccessible : original préservé. Sauvegardez-le avant toute réparation.',
           500,
         );
       this.state = {
-        version: 1,
+        version: 2,
         revision: 0,
         tokens: structuredClone(this.seed),
         history: [],
@@ -67,18 +71,34 @@ export class Store {
   }
   propose(
     revision: number,
-    changes: { key: TokenKey; value: TokenValue }[],
+    changes: Change[],
     source: Revision['source'] = 'manual',
   ): Proposal {
+    this.checkRevision(revision);
+    let target: Tokens;
+    try {
+      target = applyChanges(this.state.tokens, changes);
+    } catch (e) {
+      if (e instanceof Error && !('issues' in e))
+        throw new StudioError(e.message);
+      throw e;
+    }
+    return this.proposeTokens(revision, target, source);
+  }
+  private checkRevision(revision: number) {
     if (revision !== this.state.revision)
       throw new StudioError(
         'Le Design System a changé. Rechargez et refaites la proposition.',
         409,
       );
-    const patches = diff(
-      this.state.tokens,
-      applyChanges(this.state.tokens, changes),
-    );
+  }
+  private proposeTokens(
+    revision: number,
+    target: Tokens,
+    source: Revision['source'],
+  ): Proposal {
+    this.checkRevision(revision);
+    const patches = diff(this.state.tokens, target);
     if (!patches.length) throw new StudioError('Aucune modification.');
     if (this.proposals.size >= 100)
       this.proposals.delete(this.proposals.keys().next().value!);
@@ -87,13 +107,10 @@ export class Store {
     return structuredClone(proposal);
   }
   proposeImport(revision: number, input: unknown) {
-    const tokens = tokensSchema.parse(input);
-    return this.propose(
+    // Un import peut ajouter ou retirer des tokens : le diff les montre tous.
+    return this.proposeTokens(
       revision,
-      diff(this.state.tokens, tokens).map((p) => ({
-        key: p.key,
-        value: p.after,
-      })),
+      tokensSchema.parse(input) as Tokens,
       'import',
     );
   }
@@ -101,14 +118,15 @@ export class Store {
     const event = this.state.history.find((r) => r.id === id);
     if (!event) throw new StudioError('Révision inconnue.', 404);
     for (const p of event.patches)
-      if (this.state.tokens[p.key].$value !== p.after)
+      if (!sameToken(this.state.tokens[p.key] ?? null, p.after))
         throw new StudioError(
           `Conflit sur ${p.key} : un changement plus récent serait perdu.`,
           409,
         );
-    return this.propose(
+    // Annuler un ajout supprime le token ; annuler une suppression le recrée.
+    return this.proposeTokens(
       revision,
-      event.patches.map((p) => ({ key: p.key, value: p.before })),
+      applyPatches(this.state.tokens, event.patches, 'before'),
       'undo',
     );
   }
@@ -131,10 +149,7 @@ export class Store {
       const next: State = {
         ...this.state,
         revision: this.state.revision + 1,
-        tokens: applyChanges(
-          this.state.tokens,
-          p.patches.map((x) => ({ key: x.key, value: x.after })),
-        ),
+        tokens: applyPatches(this.state.tokens, p.patches),
         history: [
           ...this.state.history,
           {
@@ -155,6 +170,21 @@ export class Store {
     this.queue = work.catch(() => {});
     return work;
   }
+  // Version 1 → 2 au démarrage : l'original est archivé intact avant toute réécriture.
+  private async migrate(raw: string) {
+    const archive = path.join(
+      this.directory,
+      `state-v1-archive-${new Date().toISOString().replace(/[:.]/g, '-')}.json`,
+    );
+    try {
+      await atomicWrite(archive, raw);
+      await this.write(this.state);
+    } catch (e) {
+      throw new MigrationError(
+        `Migration version 1 → 2 impossible (${(e as Error).message}). state.json n’a pas été remplacé.`,
+      );
+    }
+  }
   private hash(raw: string) {
     return createHash('sha256').update(raw).digest('hex');
   }
@@ -170,8 +200,17 @@ export class Store {
   }
 }
 
+class MigrationError extends StudioError {
+  constructor(message: string) {
+    super(message, 500);
+  }
+}
 export function parseStoredState(raw: string): State {
-  const state = stateSchema.parse(JSON.parse(raw));
+  return readStoredState(raw).state;
+}
+// Accepte les versions 1 et 2 ; la version 1 est traduite en mémoire, sans écriture.
+function readStoredState(raw: string) {
+  const { state, from } = migrateState(JSON.parse(raw));
   if (state.history.length !== state.revision)
     throw new Error('Historique incohérent');
   for (const [i, r] of state.history.entries())
@@ -182,13 +221,11 @@ export function parseStoredState(raw: string): State {
     if (new Set(r.patches.map((p) => p.key)).size !== r.patches.length)
       throw new Error('Doublon');
     for (const p of r.patches)
-      if (tokens[p.key].$value !== p.after) throw new Error('Patch incohérent');
-    tokens = applyChanges(
-      tokens,
-      r.patches.map((p) => ({ key: p.key, value: p.before })),
-    );
+      if (!sameToken(tokens[p.key] ?? null, p.after))
+        throw new Error('Patch incohérent');
+    tokens = applyPatches(tokens, r.patches, 'before');
   }
-  return state;
+  return { state, from };
 }
 
 // À appeler uniquement sous le bail serveur, après confirmation explicite.

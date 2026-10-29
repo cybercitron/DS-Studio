@@ -5,13 +5,16 @@ description: Préparer et vérifier une modification de token dans DS-Studio ave
 
 # Changer un token
 
-Lire `workspace/DESIGN_RULES.md` et `app/shared/model.ts` : seuls les noms et types
-qui y sont déclarés sont acceptés en V2. Le seed versionné est
+Lire `workspace/DESIGN_RULES.md` et `app/shared/model.ts` : un nom commence par une
+famille (`color.`, `space.`, `radius.`, `font.`) qui fixe son type ; les 18 tokens
+de base sont lus par les composants. Le seed versionné est
 `workspace/design-system.tokens.json`, mais l’état courant de l’application est
 `.ds-studio/state.json`. Ne jamais éditer ce journal à la main.
 
 Pour une modification des données courantes, utiliser l’éditeur de l’application
-ou produire un JSON de tokens à importer. Garder la même liste de clés et types.
+ou produire un JSON de tokens à importer. Un ajout ou une suppression apparaît
+dans le diff ; avant de supprimer un token de base, signaler les composants listés
+dans `app/client/tokenUsage.ts` et la valeur par défaut (fuchsia, 0 ou police système).
 L’import affiche une proposition avant acceptation ; ne pas la valider à la place
 de l’étudiant. Si vous intervenez sur le seed à sa demande, préciser qu’il n’est
 chargé que pour un nouveau dossier de données : aucun état personnel ne sera écrasé.

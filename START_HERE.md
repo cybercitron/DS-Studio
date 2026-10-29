@@ -37,7 +37,9 @@ les preuves réelles. Le brief du panneau est privé dans `.ds-studio/project.js
 ne le lisez que si l’étudiant demande d’utiliser son contexte, ne le publiez pas.
 Il peut exporter un Markdown puis choisir ce qu’il reprend dans `workspace/PFE.md`.
 
-Le schéma de tokens reste version 1 : aucune migration destructive. Les clés
-nouvelles exigent une vraie migration, pas la suppression du journal. La copie
+Le schéma de tokens est en version 2 : clés libres mais encadrées par famille,
+ajout et suppression via le diff. Un état version 1 est migré au démarrage, sans
+perte, avec une archive de l'original. Tout futur changement de format exige une
+vraie migration testée, jamais la suppression du journal. La copie
 précédente ne remplace pas une sauvegarde externe. Pour une réparation, lire
 `.agents/skills/safe-recovery/SKILL.md` et préserver le fichier original.

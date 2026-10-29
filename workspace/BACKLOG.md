@@ -34,16 +34,11 @@ Idées de features et tâches à venir. Les décisions tranchées vont dans DECI
   Limite : survol et focus restent à tester à la souris et au clavier.
   Emplacement prévu : aperçu interactif de l'onglet Design.
 
-- **Ajout et suppression de tokens**, polices comprises.
-  Pourquoi : la liste actuelle est figée (18 tokens, 4 polices) et la charte du
-  CAPC risque de ne pas y entrer. À préparer avant l'import de la charte.
-  Limite : demande une migration prudente, sans perte de données.
-
 - **Générateur de palettes accessibles** (voir la décision du 28/10).
   1) Générer, ajuster et exporter une palette à partir d'une teinte hex ;
   2) bouton « Ajouter comme tokens primitives », via le diff.
   Emplacement prévu : bouton d'outil dans la barre de navigation.
-  Dépend de : « Ajout et suppression de tokens » pour l'étape 2.
+  L'ajout de tokens est fait (29/10) : l'étape 2 est débloquée.
 
 ### Priorité moyenne
 
@@ -74,3 +69,7 @@ Idées de features et tâches à venir. Les décisions tranchées vont dans DECI
 - [ ] À l'import de la charte CAPC : revoir `color.brandHover` (bleu d'origine,
       ne va plus avec le violet de `color.brand`) et choisir comment relier les
       variables Figma à DS-Studio.
+
+## Fait
+
+- **Ajout et suppression de tokens**, polices comprises (29/10, voir DECISIONS.md).
