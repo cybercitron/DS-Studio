@@ -1,4 +1,4 @@
-import { contrast } from './model.js';
+import { contrast, maxTokens, type Change, type Tokens } from './model.js';
 
 // Générateur de palettes accessibles (décision du 28/10, revue le 29/10) :
 // une couleur de départ intacte, un nombre de nuances choisi, et des règles
@@ -421,4 +421,27 @@ export function paletteTokens(
       { $type: 'color' as const, $value: s.hex },
     ]),
   );
+}
+// Ajout comme tokens primitives (étape 2) : une proposition d'ajout par nuance,
+// relue dans le diff. Une palette déjà présente, même partiellement ou avec une
+// autre casse, n'est jamais écrasée : ses tokens sont listés dans « taken ».
+export function paletteAdditions(
+  name: string,
+  shades: PaletteShade[],
+  tokens: Tokens,
+): { changes: Change[]; taken: string[]; problem: string } {
+  const prefix = `color.${paletteSlug(name)}.`;
+  const taken = Object.keys(tokens).filter((k) =>
+    k.toLowerCase().startsWith(prefix.toLowerCase()),
+  );
+  const changes = Object.entries(paletteTokens(name, shades)).map(
+    ([key, add]) => ({ key, add }),
+  );
+  const count = Object.keys(tokens).length;
+  const problem = taken.length
+    ? `La palette ${prefix}… existe déjà (${taken.length} token${taken.length > 1 ? 's' : ''}). Choisissez un autre nom : rien n’est écrasé.`
+    : count + changes.length > maxTokens
+      ? `${maxTokens} tokens au maximum : il en reste ${Math.max(0, maxTokens - count)}.`
+      : '';
+  return { changes, taken, problem };
 }

@@ -48,6 +48,9 @@ test('boucle centrale réelle : diff, validation, propagation, recharge, annulat
   await page.getByRole('button', { name: 'Proposer', exact: true }).click();
   await dialog.getByRole('button', { name: 'Valider et enregistrer' }).click();
   await expect(mainButton).toHaveCSS('background-color', 'rgb(138, 59, 32)');
+  // D'autres tests peuvent avoir écrit avant : on lit le numéro réel.
+  const brandRevision = (await (await page.request.get('/api/state')).json())
+    .revision;
   await expect(editorAction).toHaveCSS('background-color', chromeColor);
   await openComponent(page, 'Carte atelier');
   await expect(
@@ -75,7 +78,10 @@ test('boucle centrale réelle : diff, validation, propagation, recharge, annulat
   await dialog.getByRole('button', { name: 'Valider et enregistrer' }).click();
   await page.getByRole('button', { name: /Historique/ }).click();
   await page
-    .getByRole('button', { name: 'Annuler la révision 1', exact: true })
+    .getByRole('button', {
+      name: `Annuler la révision ${brandRevision}`,
+      exact: true,
+    })
     .click();
   await dialog.getByRole('button', { name: 'Valider et enregistrer' }).click();
   await expect(mainButton).toHaveCSS('background-color', 'rgb(49, 84, 196)');

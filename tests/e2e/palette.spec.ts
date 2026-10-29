@@ -61,3 +61,62 @@ test('générateur de palettes : jaune vif, règle impossible, retouche, export'
   const after = await (await page.request.get('/api/state')).json();
   expect(after.revision).toBe((await before).revision);
 });
+
+test('générateur de palettes : ajout comme tokens primitives via le diff', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const state = async () => (await page.request.get('/api/state')).json();
+  const start = await state();
+  const dialog = page.locator('dialog[aria-labelledby="diff-title"]');
+  const view = page.locator('#palette-view');
+  const add = view.getByRole('button', {
+    name: 'Ajouter comme tokens primitives',
+  });
+  const openTool = async () => {
+    await page.getByRole('button', { name: 'Créateur de palettes' }).click();
+    await view.getByLabel('Couleur de départ en hexadécimal').fill('#E2001A');
+    await view.getByLabel('Nom de la palette').fill('Rouge primaire');
+  };
+
+  // Les noms complets apparaissent dans le diff ; rien n'est écrit avant validation.
+  await openTool();
+  await expect(view).toContainText('color.rougePrimaire.050 à .900');
+  await add.click();
+  await expect(dialog).toBeVisible();
+  for (const n of ['050', '500', '900'])
+    await expect(
+      dialog.getByRole('rowheader', { name: `color.rougePrimaire.${n}` }),
+    ).toBeVisible();
+  await expect(dialog.locator('tbody tr')).toHaveCount(10);
+  await expect(dialog.getByText('Nouveau token')).toHaveCount(10);
+  expect((await state()).revision).toBe(start.revision);
+  await dialog.getByRole('button', { name: 'Valider et enregistrer' }).click();
+  await expect(dialog).not.toBeVisible();
+
+  // Présente après rechargement ; le même nom est refusé au lieu d'écraser.
+  await page.reload();
+  const added = await state();
+  expect(added.tokens['color.rougePrimaire.500']).toEqual({
+    $type: 'color',
+    $value: '#E2001A',
+  });
+  await openTool();
+  await expect(view.getByRole('alert')).toContainText('existe déjà');
+  await expect(add).toBeDisabled();
+  await view.getByLabel('Nom de la palette').fill('Rouge secondaire');
+  await expect(add).toBeEnabled();
+
+  // Annuler la révision retire les 10 tokens.
+  await page.getByRole('button', { name: /Historique/ }).click();
+  await page
+    .getByRole('button', { name: `Annuler la révision ${added.revision}` })
+    .click();
+  await expect(dialog.getByText('Supprimé')).toHaveCount(10);
+  await dialog.getByRole('button', { name: 'Valider et enregistrer' }).click();
+  await expect(dialog).not.toBeVisible();
+  const undone = await state();
+  expect(
+    Object.keys(undone.tokens).filter((k) => k.startsWith('color.rouge')),
+  ).toEqual([]);
+});

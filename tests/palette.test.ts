@@ -1,10 +1,18 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { contrast, tokenNamePattern } from '../app/shared/model.js';
+import { readFileSync } from 'node:fs';
+import {
+  applyChanges,
+  contrast,
+  tokenNamePattern,
+  tokensSchema,
+  type Tokens,
+} from '../app/shared/model.js';
 import {
   defaultRules,
   generatePalette,
   hueFamily,
+  paletteAdditions,
   paletteSlug,
   paletteTokens,
   shadeNames,
@@ -137,6 +145,62 @@ test('export : noms de tokens valides à partir d’un nom libre', () => {
     $value: '#5D47FF',
   });
   for (const key of Object.keys(tokens)) assert.match(key, tokenNamePattern);
+});
+
+test('ajout comme primitives : 050 → 900, noms valides, jamais d’écrasement', () => {
+  const seed = tokensSchema.parse(
+    JSON.parse(
+      readFileSync(
+        new URL('../workspace/design-system.tokens.json', import.meta.url),
+        'utf8',
+      ),
+    ),
+  ) as Tokens;
+  const p = generatePalette({ base: '#E2001A', count: 10 });
+  const add = paletteAdditions('Rouge primaire', p.shades, seed);
+  assert.equal(add.problem, '');
+  assert.deepEqual(
+    add.changes.map((c) => c.key),
+    shadeNames(10).map((n) => `color.rougePrimaire.${n}`),
+  );
+  // Tous finissent par un numéro : la future vue Couleurs les range en primitives.
+  for (const c of add.changes) assert.match(c.key, /\.[0-9]+$/);
+  const next = applyChanges(seed, add.changes);
+  assert.deepEqual(next['color.rougePrimaire.500'], {
+    $type: 'color',
+    $value: '#E2001A',
+  });
+
+  // Palette déjà présente, même avec une autre casse ou d'autres nuances.
+  const again = paletteAdditions('ROUGE  Primaire', p.shades.slice(0, 3), next);
+  assert.equal(again.taken.length, 10);
+  assert.match(again.problem, /existe déjà/);
+  const partial = {
+    ...seed,
+    'color.rougeprimaire.700': next['color.rougePrimaire.700'],
+  };
+  assert.deepEqual(
+    paletteAdditions('Rouge primaire', p.shades, partial).taken,
+    ['color.rougeprimaire.700'],
+  );
+  // Un token voisin au nom plus long n'est pas confondu avec la palette.
+  const neighbour = {
+    ...seed,
+    'color.rougePrimaireFonce.500': next['color.rougePrimaire.500'],
+  };
+  assert.equal(
+    paletteAdditions('Rouge primaire', p.shades, neighbour).problem,
+    '',
+  );
+
+  // Limite de 500 tokens signalée avant la proposition.
+  const full = Object.fromEntries(
+    Array.from({ length: 495 }, (_, i) => [
+      `color.gris.${i}`,
+      { $type: 'color', $value: '#808080' },
+    ]),
+  ) as Tokens;
+  assert.match(paletteAdditions('Bleu', p.shades, full).problem, /500 tokens/);
 });
 
 // Teinte sur le cercle classique (TSL), de -180 à 180 autour de la référence.

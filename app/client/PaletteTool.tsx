@@ -6,21 +6,34 @@ import {
   generatePalette,
   hueFamily,
   hueStep,
+  paletteAdditions,
   paletteSlug,
   paletteTokens,
   shadeNames,
   validatePalette,
   type PaletteRule,
 } from '../shared/palette.js';
+import type { Change, Tokens } from '../shared/model.js';
 import { downloadText } from './api.js';
 import Icon from './Icon.js';
 
 const HEX = /^#[0-9a-fA-F]{6}$/;
 const ratio = (n: number) => `${n.toFixed(2).replace('.', ',')}:1`;
 
-// Générateur de palettes accessibles : rien n'est écrit dans le DS ici, la
-// palette s'exporte en JSON. L'ajout comme tokens viendra dans un second temps.
-export function PaletteTool({ initial }: { initial: string }) {
+// Générateur de palettes accessibles : la palette s'exporte en JSON ou s'ajoute
+// comme tokens primitives, via le même diff que les autres ajouts. Rien n'est
+// écrit dans le DS sans validation.
+export function PaletteTool({
+  initial,
+  tokens,
+  disabled,
+  onPropose,
+}: {
+  initial: string;
+  tokens: Tokens;
+  disabled: boolean;
+  onPropose: (changes: Change[]) => Promise<void>;
+}) {
   const [base, setBase] = useState(initial.toUpperCase());
   const [baseDraft, setBaseDraft] = useState(initial.toUpperCase());
   const [name, setName] = useState('Ma palette');
@@ -54,6 +67,7 @@ export function PaletteTool({ initial }: { initial: string }) {
       ? palette?.rules[usable.slice(0, i).filter(Boolean).length]
       : undefined,
   );
+  const additions = palette && paletteAdditions(name, palette.shades, tokens);
   const hexOf = (n: string) =>
     palette?.shades.find((s) => s.name === n)?.hex ?? '#FFFFFF';
 
@@ -93,7 +107,8 @@ export function PaletteTool({ initial }: { initial: string }) {
             onChange={(e) => setName(e.target.value)}
           />
           <span className="token-hint">
-            Tokens exportés : color.{paletteSlug(name)}.…
+            Tokens créés : color.{paletteSlug(name)}.{names[0]} à .
+            {names[count - 1]}
           </span>
         </label>
         <label>
@@ -370,6 +385,14 @@ export function PaletteTool({ initial }: { initial: string }) {
             <button
               type="button"
               className="studio-primary"
+              aria-describedby="palette-add-help"
+              disabled={disabled || !!additions?.problem}
+              onClick={() => additions && void onPropose(additions.changes)}
+            >
+              Ajouter comme tokens primitives
+            </button>
+            <button
+              type="button"
               onClick={() =>
                 downloadText(
                   `palette-${paletteSlug(name)}.tokens.json`,
@@ -381,10 +404,20 @@ export function PaletteTool({ initial }: { initial: string }) {
             >
               Exporter la palette (JSON)
             </button>
-            <span className="token-hint">
-              Fichier téléchargé seulement : le Design System n’est pas modifié.
-            </span>
           </div>
+          <p className="token-hint" id="palette-add-help">
+            {additions?.problem ? (
+              <span className="error" role="alert">
+                {additions.problem}
+              </span>
+            ) : (
+              <>
+                Ajout de {count} tokens <code>color.{paletteSlug(name)}.…</code>{' '}
+                : vous relirez le diff avant tout enregistrement. L’export
+                télécharge un fichier sans modifier le Design System.
+              </>
+            )}
+          </p>
         </>
       )}
     </div>

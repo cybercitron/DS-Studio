@@ -11,6 +11,7 @@ import Icon from './Icon.js';
 import ComponentPage from './ComponentPage.js';
 import { componentDocs } from './componentDocs.js';
 import ProjectBrief from './ProjectBrief.js';
+import { ColorsView } from './ColorsView.js';
 import { PaletteTool } from './PaletteTool.js';
 import { AddTokenForm, FontHint, RemovalWarning } from './TokenTools.js';
 import { tokenUsage } from './tokenUsage.js';
@@ -893,17 +894,26 @@ export default function App() {
                   </>
                 ) : (
                   <p>
-                    {selectedFamily
-                      ? 'Famille de tokens · cliquez un token pour le modifier'
-                      : selection.kind === 'tokens'
-                        ? `${tokenKeys.length} tokens · ${families.length} familles · cliquez un token pour le modifier`
-                        : `${components.length} composants · Cartel`}
+                    {selectedFamily?.prefix === 'color.'
+                      ? 'Primitives : les couleurs brutes des palettes · Semantic : leur rôle · cliquez un token pour le modifier'
+                      : selectedFamily
+                        ? 'Famille de tokens · cliquez un token pour le modifier'
+                        : selection.kind === 'tokens'
+                          ? `${tokenKeys.length} tokens · ${families.length} familles · cliquez un token pour le modifier`
+                          : `${components.length} composants · Cartel`}
                   </p>
                 )}
               </div>
               <span>Valeurs enregistrées</span>
             </div>
-            {selectedFamily ? (
+            {selectedFamily?.prefix === 'color.' ? (
+              <ColorsView
+                tokens={state.tokens}
+                selected={key}
+                onSelect={openEditor}
+                onCreatePalette={openPalette}
+              />
+            ) : selectedFamily ? (
               <div className="family-view">
                 {tokenKeys
                   .filter((k) => k.startsWith(selectedFamily.prefix))
@@ -976,7 +986,12 @@ export default function App() {
               </div>
               <span>Brouillon non enregistré</span>
             </div>
-            <PaletteTool initial={brand} />
+            <PaletteTool
+              initial={brand}
+              tokens={state.tokens}
+              disabled={!boot}
+              onPropose={proposeChanges}
+            />
           </section>
           <section
             id="mobile-panel"

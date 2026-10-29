@@ -24,6 +24,7 @@ test('ajout et suppression de tokens : diff, rechargement, annulation, alerte', 
 
   await page.reload();
   await page.locator('#ds-panel .nav-item', { hasText: 'Couleurs' }).click();
+  await page.getByRole('tab', { name: /^Primitives/ }).click();
   await expect(
     page.getByRole('button', { name: 'Sélectionner color.rouge.500' }),
   ).toContainText('#E2001A');

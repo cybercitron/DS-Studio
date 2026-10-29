@@ -2409,7 +2409,7 @@ ins {
   align-items: center;
   gap: var(--studio-space-3);
 }
-.palette-actions .token-hint {
+.palette-tool > .token-hint {
   margin: 0;
 }
 @media (max-width: 600px) {
@@ -2658,5 +2658,170 @@ ins {
   .ds-panel .token-row,
   .nav-section-title {
     min-height: 44px;
+  }
+}
+/* Page Couleurs (décision du 29/10) : onglets Primitives et Semantic. */
+.colors-view {
+  display: grid;
+  gap: var(--studio-space-6);
+  padding-bottom: 24px;
+}
+.colors-tabs {
+  justify-self: start;
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--studio-line);
+  border-radius: var(--studio-radius-pill);
+  background: var(--studio-panel);
+}
+.colors-tabs button {
+  min-height: 36px;
+  gap: 8px;
+  padding: 0 16px;
+  border: 0;
+  background: transparent;
+  color: var(--studio-muted);
+}
+.colors-tabs button[aria-selected='true'] {
+  color: #ffffff;
+  background: var(--studio-ink);
+}
+.colors-tabs button[aria-selected='true'] .nav-count {
+  color: #d9d7e8;
+}
+.colors-tabs .nav-count {
+  margin: 0;
+}
+.primitive-list {
+  display: grid;
+  gap: var(--studio-space-4);
+  justify-items: start;
+}
+.primitive-palette {
+  justify-self: stretch;
+  padding: var(--studio-space-4);
+  border: 1px solid var(--studio-line);
+  border-radius: var(--studio-radius-card);
+  background: var(--studio-surface);
+  box-shadow: var(--studio-shadow);
+}
+.primitive-palette h4 {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 var(--studio-space-3);
+  font-size: 15px;
+}
+.primitive-palette h4 code {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--studio-muted);
+}
+.primitive-scale {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.primitive-swatch {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-content: stretch;
+  justify-items: start;
+  gap: 2px;
+  width: 100%;
+  min-height: 0;
+  padding: 4px;
+  border: 1px solid transparent;
+  border-radius: var(--studio-radius);
+  background: transparent;
+  font-weight: 400;
+  text-align: start;
+}
+.primitive-swatch:hover {
+  border-color: var(--studio-line);
+  background: var(--studio-panel);
+}
+.primitive-swatch[aria-pressed='true'] {
+  border-color: var(--studio-accent);
+  background: var(--studio-selected);
+}
+.primitive-swatch .sample-color {
+  width: 100%;
+  height: 48px;
+}
+.primitive-swatch strong {
+  font-size: 13px;
+}
+.primitive-swatch code {
+  font-size: 11px;
+  color: var(--studio-muted);
+}
+.colors-empty {
+  display: grid;
+  justify-items: center;
+  gap: var(--studio-space-3);
+  padding: var(--studio-space-8) var(--studio-space-4);
+  border: 1px dashed var(--studio-control-line);
+  border-radius: var(--studio-radius-card);
+  text-align: center;
+  color: var(--studio-muted);
+}
+.colors-empty > .icon {
+  width: 40px;
+  color: var(--studio-accent);
+}
+.colors-empty h4 {
+  margin: 0;
+  color: var(--studio-text);
+}
+.colors-empty p {
+  max-width: 46ch;
+  margin: 0;
+}
+.semantic-group h4 {
+  margin: 0 0 var(--studio-space-2);
+}
+.semantic-toggle {
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px 0 8px;
+  border: 0;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 600;
+}
+.semantic-toggle .icon {
+  width: 16px;
+  transition: transform 160ms ease-out;
+}
+.semantic-toggle[aria-expanded='true'] .icon {
+  transform: rotate(90deg);
+}
+.semantic-toggle .nav-count {
+  margin: 0;
+}
+.semantic-usage {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--studio-muted);
+  text-align: end;
+}
+@media (max-width: 600px) {
+  .primitive-scale {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  }
+  .semantic-group .family-row {
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+  .family-row .semantic-usage {
+    order: 3;
+    flex-basis: 100%;
+    padding-inline-start: 88px;
+    text-align: start;
   }
 }

@@ -260,3 +260,88 @@ locaux validés. Claude et Gemini ne sont pas activés sans qualification.
   utilisable sans Internet ; licence de chaque illustration vérifiée et notée.
 - **Limite connue** : « très marqués » et Poppins sont à tester ; on ajustera si
   cela gêne la densité des listes. Le style reste un jugement personnel.
+
+## 2026-10-29 — Vue Couleurs : onglets Primitives et Semantic
+
+- **Problème** : la page Couleurs mélange les couleurs brutes des palettes et les
+  rôles (texte, fond, marque…). Le générateur de palettes va créer de nombreuses
+  primitives : sans séparation, la page deviendra illisible.
+- **Options explorées** : tri par le nom ou par une étiquette dans chaque token ;
+  Couleurs seulement ou toutes les familles ; sémantiques en liste simple ou
+  regroupées par rôle.
+- **Décision** :
+  - Deux onglets en haut de la page Couleurs : **Primitives** et **Semantic**.
+  - Tri par le nom : un token qui finit par un numéro (`color.rouge.500`) est
+    une primitive ; les autres sont des sémantiques.
+  - Primitives : une rangée de pastilles par palette (050 → 900). État vide avec
+    une illustration et un bouton « Créer une palette » qui ouvre le générateur.
+  - Semantic : groupes repliables par rôle (Marque, Texte, Fonds, Bordures,
+    États). Les tokens actuels sont rangés par une table de correspondance ; un
+    nouveau token `color.groupe.nom` va dans son groupe ; sinon « Autres ».
+    Chaque ligne : pastille, nom, valeur, composants qui l'utilisent.
+  - Cliquer sur un token ouvre le panneau de modification (un seul endroit pour
+    modifier).
+  - Couleurs seulement pour l'instant.
+  - Ordre : d'abord le bouton « Ajouter comme tokens primitives » du générateur,
+    pour que l'onglet Primitives ait du contenu dès sa sortie.
+- **Raison** : séparer « quelle couleur » et « à quoi elle sert », comme dans les
+  DS professionnels et les variables Figma ; préparer les alias et les modes.
+- **Preuve attendue** : une palette ajoutée depuis le générateur apparaît dans
+  Primitives ; les tokens actuels sont tous rangés dans le bon groupe de Semantic ;
+  repli, dépli et clic vers le panneau testés à la souris et au clavier.
+- **Limite connue** : le tri par le nom dépend d'un nommage rigoureux. Pas encore
+  de colonne « pointe vers » (alias) ni de colonnes par mode.
+
+## 2026-10-29 — Générateur de palettes : ajout comme tokens primitives
+
+- **Problème** : la palette générée ne pouvait qu'être exportée ; il fallait la
+  recréer token par token.
+- **Options explorées** : nom avec tirets (`color.rouge-primaire.050`) ou en
+  camelCase (`color.rougePrimaire.050`) ; écraser une palette existante ou refuser.
+- **Décision** : un bouton « Ajouter comme tokens primitives » crée une famille
+  `color.nomEnCamelCase.050` → `.900`, via le même diff, la même validation et la
+  même annulation que les autres ajouts. Un nom déjà pris (même avec une autre
+  casse) est signalé et bloque l'ajout : rien n'est écrasé. L'export JSON reste
+  disponible.
+- **Raison** : le schéma v2 n'accepte pas les tirets, et un tiret rendrait deux
+  noms identiques en variable CSS. Les noms finissent par un numéro : la future
+  vue Couleurs les rangera en primitives.
+- **Preuve** : 49 tests unitaires, 23 tests de parcours ; essai réel sur mes
+  données : « Rouge primaire » ajoutée, présente après rechargement, refus du
+  même nom, puis annulation.
+- **Limite connue** : pas de mode sombre ni de vue Couleurs encore. Pour modifier
+  une palette déjà ajoutée, il faut l'annuler ou changer de nom.
+
+## 2026-10-29 — Recadrage : la promesse de DS-Studio
+
+- **Problème** : en deux jours, les features se sont accumulées plus vite que le
+  besoin ne se précisait ; j'ai perdu le sens de l'outil. Or mon livrable final
+  (mai 2027) est un Design System dans Figma.
+- **Options explorées** : DS-Studio comme second endroit où vit le DS, avec sa
+  propre consultation, ses alias et ses modes ; ou DS-Studio comme atelier
+  d'assistance qui fabrique, vérifie et livre dans Figma.
+- **Décision** : la seconde option, avec cette promesse :
+  « DS-Studio est mon assistant de création de Design System : il fabrique et
+  vérifie à ma place les briques longues à produire (palettes, composants,
+  variantes, documentation), puis me les livre dans Figma, où vit mon DS final. »
+  - Figma est la source de vérité. DS-Studio y lit pour vérifier et y ajoute de
+    nouvelles briques.
+  - Priorités : 1) palette → variables Figma ; 2) générateur de composants, qui
+    absorbe le panneau de propriétés et l'affichage des états. Gardés : mode
+    sombre du générateur de palettes, vérificateur de contrastes, aperçu mobile.
+  - Priorité moyenne : documentation générée vers Figma ; prototypes réels à
+    partir de mes maquettes Figma (après les composants).
+  - En pause : alias et modes dans DS-Studio (les variables Figma le font),
+    liste des templates, mode salle d'exposition. Illustrations en priorité basse.
+  - Abandonné : remplacer Codex par Claude dans l'outil (je travaille déjà avec
+    Claude dans le terminal).
+  - Projet à part, après finalisation du DS : un site de présentation du DS.
+- **Raison** : ce qui me prend du temps, c'est la palette accessible, les
+  composants, les variantes et la documentation. Ce que Figma ne fait pas, c'est
+  vérifier l'accessibilité, montrer le vrai rendu mobile et documenter. Je ne veux
+  pas d'un Figma en moins bien.
+- **Preuve attendue** : chaque pont vers Figma commence par un test sur le
+  fichier Figma de test : refus sans validation, écriture validée, résultat relu.
+- **Limite connue** : l'écriture dans Figma passera par un plugin que je lance
+  moi-même (le plan Étudiant n'a pas d'accès automatique aux variables). Les
+  prototypes et la documentation dépendent des composants.
