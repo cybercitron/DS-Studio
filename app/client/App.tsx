@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   Button,
   DSProvider,
@@ -41,11 +41,42 @@ const families = [
   { prefix: 'radius.', name: 'Rayons' },
 ] as const;
 type Family = (typeof families)[number];
-// Ce que le canevas affiche : tout le catalogue, une famille ou un composant.
+// Ce que le canevas affiche : une vue d'ensemble (tokens ou composants),
+// une famille ou un composant.
 type Selection =
   | { kind: 'all' }
+  | { kind: 'tokens' }
   | { kind: 'family'; prefix: Family['prefix'] }
   | { kind: 'component'; id: ComponentId };
+// Sections repliables de la barre latérale : ouvertes au premier lancement,
+// puis le choix est retenu sur ce poste.
+type NavSection = 'tokens' | 'components';
+const navStorageKey = 'ds-studio-sidebar-v1';
+function useNavSections() {
+  const [open, setOpen] = useState<Record<NavSection, boolean>>(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(navStorageKey) || 'null');
+      return {
+        tokens: saved?.tokens !== false,
+        components: saved?.components !== false,
+      };
+    } catch {
+      return { tokens: true, components: true };
+    }
+  });
+  function toggle(section: NavSection) {
+    setOpen((current) => {
+      const next = { ...current, [section]: !current[section] };
+      try {
+        localStorage.setItem(navStorageKey, JSON.stringify(next));
+      } catch {
+        /* Facultatif. */
+      }
+      return next;
+    });
+  }
+  return { open, toggle };
+}
 const devices = [
   { label: 'Compact · 320', width: 320 },
   { label: 'Standard · 375', width: 375 },
@@ -122,6 +153,7 @@ export default function App() {
   );
   const [search, setSearch] = useState('');
   const [selection, setSelection] = useState<Selection>({ kind: 'all' });
+  const nav = useNavSections();
   const [agents, setAgents] = useState<Bootstrap['agents']>([]);
   const [proposal, setProposal] = useState<Proposal>();
   const [error, setError] = useState('');
@@ -171,6 +203,14 @@ export default function App() {
     setCanvasView('catalogue');
     if (matchMedia('(max-width: 1099px)').matches) navigatePanel('canvas');
     else setActivePanel('canvas');
+  }
+  function openPalette() {
+    setFocusCanvas(false);
+    navigatePanel('canvas');
+    setCanvasView('palette');
+    requestAnimationFrame(() =>
+      document.getElementById('palette-title')?.focus(),
+    );
   }
   function closeEditor() {
     setAgentOpen(false);
@@ -358,6 +398,89 @@ export default function App() {
       <code>{state.tokens[k].$value}</code>
     </button>
   );
+  const onCatalogue = canvasView === 'catalogue';
+  // Option A de la décision du 29/10 : la flèche replie, le titre ouvre la
+  // vue d'ensemble. Un clic ne fait qu'une chose.
+  const navSection = (
+    id: NavSection,
+    label: string,
+    icon: 'sliders' | 'components',
+    count: number,
+    overview: Selection,
+    items: ReactNode,
+  ) => (
+    <div className="nav-section" data-open={nav.open[id]}>
+      <div className="nav-section-head">
+        <button
+          className="nav-toggle"
+          aria-expanded={nav.open[id]}
+          aria-controls={`nav-${id}`}
+          aria-label={`Liste ${label}`}
+          title={nav.open[id] ? `Replier ${label}` : `Déplier ${label}`}
+          onClick={() => nav.toggle(id)}
+        >
+          <Icon name="chevron" />
+        </button>
+        <button
+          className="nav-section-title"
+          aria-pressed={onCatalogue && selection.kind === overview.kind}
+          onClick={() => select(overview)}
+        >
+          <Icon name={icon} />
+          {label}
+          <span className="sr-only"> · vue d’ensemble</span>
+          <span className="nav-count">{count}</span>
+        </button>
+      </div>
+      <div
+        id={`nav-${id}`}
+        className="nav-section-items"
+        hidden={!nav.open[id]}
+      >
+        {items}
+      </div>
+    </div>
+  );
+  const familyRow = (k: TokenKey, prefix: Family['prefix']) => {
+    const t = state.tokens[k];
+    return (
+      <button
+        key={k}
+        className="family-row"
+        aria-label={`Sélectionner ${k}`}
+        aria-pressed={key === k}
+        onClick={() => openEditor(k)}
+      >
+        <span className="family-sample" aria-hidden="true">
+          {t.$type === 'color' ? (
+            <span
+              className="sample-color"
+              style={{ background: String(t.$value) }}
+            />
+          ) : t.$type === 'fontFamily' ? (
+            <span style={{ fontFamily: String(t.$value) }}>Aa</span>
+          ) : k.startsWith('font.') ? (
+            <span style={{ fontSize: `${t.$value}px` }}>Aa</span>
+          ) : k.startsWith('radius.') ? (
+            <span
+              className="sample-radius"
+              style={{ borderRadius: `${t.$value}px` }}
+            />
+          ) : (
+            <span className="sample-space" style={{ width: `${t.$value}px` }} />
+          )}
+        </span>
+        <span className="family-name">
+          <strong>{k.slice(prefix.length)}</strong>
+          <code>{k}</code>
+        </span>
+        <code className="family-value">
+          {t.$value}
+          {t.$type === 'dimension' ? ' px' : ''}
+        </code>
+      </button>
+    );
+  };
   const selectedFamily =
     selection.kind === 'family'
       ? families.find((f) => f.prefix === selection.prefix)!
@@ -389,22 +512,6 @@ export default function App() {
           <span>Design System du Capc</span>
         </div>
         <div className="intro-actions">
-          <button
-            className="palette-trigger"
-            aria-pressed={canvasView === 'palette'}
-            aria-controls="palette-view"
-            onClick={() => {
-              setFocusCanvas(false);
-              navigatePanel('canvas');
-              setCanvasView('palette');
-              requestAnimationFrame(() =>
-                document.getElementById('palette-title')?.focus(),
-              );
-            }}
-          >
-            <Icon name="palette" />
-            <span>Palette</span>
-          </button>
           <button
             aria-label="Exporter les tokens"
             onClick={() => void perform(exportTokens)}
@@ -630,15 +737,18 @@ export default function App() {
                 </>
               ) : (
                 <>
-                  <div className="token-group">
-                    <h3>
-                      Tokens<span>{tokenKeys.length}</span>
-                    </h3>
-                    {families.map((f) => (
+                  {navSection(
+                    'tokens',
+                    'Tokens',
+                    'sliders',
+                    tokenKeys.length,
+                    { kind: 'tokens' },
+                    families.map((f) => (
                       <button
                         key={f.prefix}
                         className="nav-item"
                         aria-pressed={
+                          onCatalogue &&
                           selection.kind === 'family' &&
                           selection.prefix === f.prefix
                         }
@@ -646,7 +756,6 @@ export default function App() {
                           select({ kind: 'family', prefix: f.prefix })
                         }
                       >
-                        <Icon name="sliders" />
                         {f.name}
                         <span className="nav-count">
                           {
@@ -655,37 +764,63 @@ export default function App() {
                           }
                         </span>
                       </button>
-                    ))}
-                  </div>
-                  <div className="token-group">
-                    <h3>
-                      Composants<span>{components.length}</span>
-                    </h3>
-                    <button
-                      className="nav-item"
-                      aria-pressed={selection.kind === 'all'}
-                      onClick={() => select({ kind: 'all' })}
-                    >
-                      <Icon name="layers" />
-                      Vue d’ensemble
-                    </button>
-                    {components.map((c) => (
+                    )),
+                  )}
+                  {navSection(
+                    'components',
+                    'Composants',
+                    'components',
+                    components.length,
+                    { kind: 'all' },
+                    components.map((c) => (
                       <button
                         key={c.id}
                         className="nav-item"
                         aria-pressed={
+                          onCatalogue &&
                           selection.kind === 'component' &&
                           selection.id === c.id
                         }
                         onClick={() => select({ kind: 'component', id: c.id })}
                       >
-                        <Icon name="layers" />
                         {c.name}
                       </button>
-                    ))}
-                  </div>
+                    )),
+                  )}
                 </>
               )}
+            </div>
+            <div
+              className="toolbox"
+              role="group"
+              aria-labelledby="toolbox-title"
+            >
+              <h3 id="toolbox-title">Boîte à outils</h3>
+              <button
+                className="nav-item tool-item"
+                aria-pressed={canvasView === 'palette'}
+                aria-controls="palette-view"
+                onClick={openPalette}
+              >
+                <Icon name="palette" />
+                Créateur de palettes
+              </button>
+              {/* Annoncé mais pas encore construit : focusable, sans action. */}
+              <div className="tool-wip-wrap">
+                <button
+                  className="nav-item tool-item tool-wip"
+                  aria-disabled="true"
+                  aria-describedby="wip-hint"
+                  onClick={(e) => e.preventDefault()}
+                >
+                  <Icon name="components" />
+                  Générateur de composants
+                  <span className="wip-badge">WIP</span>
+                </button>
+                <span id="wip-hint" className="tool-tooltip" role="tooltip">
+                  Bientôt disponible
+                </span>
+              </div>
             </div>
           </div>
         </section>
@@ -699,28 +834,31 @@ export default function App() {
             <h2 id="canvas-title" className="sr-only" tabIndex={-1}>
               Design
             </h2>
-            <div className="canvas-tabs" aria-label="Vue du canevas">
-              <button
-                aria-pressed={canvasView === 'catalogue'}
-                onClick={() => {
-                  setCanvasView('catalogue');
-                  setActivePanel('canvas');
-                }}
-              >
-                <Icon name="layers" />
-                Design
-              </button>
-              <button
-                aria-pressed={canvasView === 'preview'}
-                onClick={() => {
-                  setCanvasView('preview');
-                  setActivePanel('mobile');
-                }}
-              >
-                <Icon name="phone" />
-                Aperçu
-              </button>
-            </div>
+            {/* Design / Aperçu : seulement sur la page d'un composant (29/10). */}
+            {selectedComponent && canvasView !== 'palette' && (
+              <div className="canvas-tabs" aria-label="Vue du canevas">
+                <button
+                  aria-pressed={canvasView === 'catalogue'}
+                  onClick={() => {
+                    setCanvasView('catalogue');
+                    setActivePanel('canvas');
+                  }}
+                >
+                  <Icon name="layers" />
+                  Design
+                </button>
+                <button
+                  aria-pressed={canvasView === 'preview'}
+                  onClick={() => {
+                    setCanvasView('preview');
+                    setActivePanel('mobile');
+                  }}
+                >
+                  <Icon name="phone" />
+                  Aperçu
+                </button>
+              </div>
+            )}
             <span className="canvas-revision">Révision {state.revision}</span>
             <button
               className="icon-button focus-trigger"
@@ -741,7 +879,7 @@ export default function App() {
                 <h3>
                   {selectedFamily?.name ??
                     selectedComponent?.name ??
-                    'Composants'}
+                    (selection.kind === 'tokens' ? 'Tokens' : 'Composants')}
                 </h3>
                 {selectedComponent ? (
                   <>
@@ -757,7 +895,9 @@ export default function App() {
                   <p>
                     {selectedFamily
                       ? 'Famille de tokens · cliquez un token pour le modifier'
-                      : `${components.length} composants · Cartel`}
+                      : selection.kind === 'tokens'
+                        ? `${tokenKeys.length} tokens · ${families.length} familles · cliquez un token pour le modifier`
+                        : `${components.length} composants · Cartel`}
                   </p>
                 )}
               </div>
@@ -767,55 +907,34 @@ export default function App() {
               <div className="family-view">
                 {tokenKeys
                   .filter((k) => k.startsWith(selectedFamily.prefix))
-                  .map((k) => {
-                    const t = state.tokens[k];
-                    return (
+                  .map((k) => familyRow(k, selectedFamily.prefix))}
+              </div>
+            ) : selection.kind === 'tokens' ? (
+              <div className="tokens-overview">
+                {families.map((f) => (
+                  <section
+                    key={f.prefix}
+                    className="overview-family"
+                    aria-labelledby={`overview-${f.prefix}`}
+                  >
+                    <h4 id={`overview-${f.prefix}`}>
                       <button
-                        key={k}
-                        className="family-row"
-                        aria-label={`Sélectionner ${k}`}
-                        aria-pressed={key === k}
-                        onClick={() => openEditor(k)}
+                        className="overview-family-link"
+                        onClick={() =>
+                          select({ kind: 'family', prefix: f.prefix })
+                        }
                       >
-                        <span className="family-sample" aria-hidden="true">
-                          {t.$type === 'color' ? (
-                            <span
-                              className="sample-color"
-                              style={{ background: String(t.$value) }}
-                            />
-                          ) : t.$type === 'fontFamily' ? (
-                            <span style={{ fontFamily: String(t.$value) }}>
-                              Aa
-                            </span>
-                          ) : k.startsWith('font.') ? (
-                            <span style={{ fontSize: `${t.$value}px` }}>
-                              Aa
-                            </span>
-                          ) : k.startsWith('radius.') ? (
-                            <span
-                              className="sample-radius"
-                              style={{ borderRadius: `${t.$value}px` }}
-                            />
-                          ) : (
-                            <span
-                              className="sample-space"
-                              style={{ width: `${t.$value}px` }}
-                            />
-                          )}
-                        </span>
-                        <span className="family-name">
-                          <strong>
-                            {k.slice(selectedFamily.prefix.length)}
-                          </strong>
-                          <code>{k}</code>
-                        </span>
-                        <code className="family-value">
-                          {t.$value}
-                          {t.$type === 'dimension' ? ' px' : ''}
-                        </code>
+                        {f.name}
+                        <Icon name="arrow" />
                       </button>
-                    );
-                  })}
+                    </h4>
+                    <div className="family-view">
+                      {tokenKeys
+                        .filter((k) => k.startsWith(f.prefix))
+                        .map((k) => familyRow(k, f.prefix))}
+                    </div>
+                  </section>
+                ))}
               </div>
             ) : selectedComponent ? (
               <ComponentPage

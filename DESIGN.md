@@ -18,34 +18,34 @@ colors:
   studio-control-hover: '#72738a'
 typography:
   headline:
-    fontFamily: Geist, sans-serif
+    fontFamily: Poppins, sans-serif
     fontSize: 20px
     fontWeight: 700
     lineHeight: 1.5
     letterSpacing: -0.025em
   title:
-    fontFamily: Geist, sans-serif
+    fontFamily: Poppins, sans-serif
     fontSize: 18px
     fontWeight: 600
     lineHeight: 1.3
     letterSpacing: -0.025em
   panel-title:
-    fontFamily: Geist, sans-serif
+    fontFamily: Poppins, sans-serif
     fontSize: 13px
     fontWeight: 600
     lineHeight: 1.5
   body:
-    fontFamily: Geist, sans-serif
+    fontFamily: Poppins, sans-serif
     fontSize: 14px
     fontWeight: 400
     lineHeight: 1.5
   control:
-    fontFamily: Geist, sans-serif
+    fontFamily: Poppins, sans-serif
     fontSize: 13px
     fontWeight: 500
     lineHeight: 1.5
   label:
-    fontFamily: Geist, sans-serif
+    fontFamily: Poppins, sans-serif
     fontSize: 12px
     fontWeight: 400
     lineHeight: 1.5
@@ -55,10 +55,10 @@ typography:
     fontWeight: 400
     lineHeight: 1.5
 rounded:
-  row: 4px
-  control: 6px
-  composer: 8px
-  dialog: 12px
+  control: 12px
+  card: 20px
+  dialog: 28px
+  pill: 999px
 spacing:
   '1': 4px
   '2': 8px
@@ -70,16 +70,16 @@ components:
   button-primary:
     backgroundColor: '{colors.studio-accent}'
     textColor: '{colors.studio-surface}'
-    rounded: '{rounded.control}'
+    rounded: '{rounded.pill}'
     typography: '{typography.control}'
-    padding: 6px 10px
+    padding: 6px 16px
   button-primary-hover:
     backgroundColor: '{colors.studio-accent-hover}'
   button-secondary:
     backgroundColor: '{colors.studio-surface}'
     textColor: '{colors.studio-text}'
-    rounded: '{rounded.control}'
-    padding: 6px 10px
+    rounded: '{rounded.pill}'
+    padding: 6px 16px
   input:
     backgroundColor: '{colors.studio-surface}'
     textColor: '{colors.studio-text}'
@@ -87,11 +87,11 @@ components:
     padding: 7px 10px
   token-row-selected:
     backgroundColor: '{colors.studio-selected}'
-    rounded: '{rounded.row}'
-    padding: 5px 8px
+    rounded: '{rounded.pill}'
+    padding: 6px 14px
   composer:
     backgroundColor: '{colors.studio-surface}'
-    rounded: '{rounded.composer}'
+    rounded: '{rounded.card}'
     padding: '{spacing.3}'
 ---
 
@@ -108,7 +108,7 @@ Le chrome de DS-Studio et le système édité sont deux domaines visuels indépe
 **Key Characteristics:**
 
 - Encre violette, lavande pâle et planche blanche.
-- Geist locale pour l’interface ; monospace pour les clés et valeurs.
+- Poppins locale pour l’interface ; monospace pour les clés et valeurs.
 - Surfaces jointives, contours utiles et profondeur tonale.
 - Spécimens réels ; aucune image décorative livrée.
 
@@ -144,10 +144,10 @@ Une palette froide et légèrement violette, avec un accent iris réservé aux c
 ## Typography
 
 **Display Font:** aucune police d'affiche propre au chrome.
-**Body Font:** Geist, avec sans-serif en repli.
+**Body Font:** Poppins, avec sans-serif en repli.
 **Label/Mono Font:** ui-monospace, avec monospace en repli, pour les clés et valeurs.
 
-**Character:** Une sans compacte et nette, sans emphase marketing. Geist variable (poids 100–900) est chargée localement avec `font-display: swap` ; la police du système édité reste indépendante.
+**Character:** Une sans géométrique et ronde, choisie le 29/10 à la place de Geist pour un atelier plus actuel. Poppins (4 fichiers statiques : 400, 500, 600, 700) est chargée localement avec `font-display: swap` ; la police du système édité reste indépendante.
 
 ### Hierarchy
 
@@ -171,35 +171,35 @@ Sous 1100px, quatre destinations explicites — Tokens, Design, Aperçu, Modifie
 
 ## Elevation & Depth
 
-Aucune ombre d'auteur n'est utilisée dans le chrome. La profondeur vient du contraste des surfaces, des filets et de la sélection. Le dialogue natif place une planche blanche au-dessus d'un voile violet translucide (`#1c183a66`). Aucun token d'ombre n'est extrait.
+Depuis la refonte du 29/10 (inspirée d'eBay Playbook, sans rien reprendre de la marque), les cartes portent une ombre légère : `--studio-shadow` au repos, `--studio-shadow-hover` au survol, pour les dialogues et les boutons flottants. Les zones de l'atelier restent séparées par des filets de 1px. Le dialogue natif place une planche blanche au-dessus d'un voile violet translucide (`#1c183a66`).
 
 ### Named Rules
 
-**The Tonal Depth Rule.** Les panneaux restent plats. La distinction entre fond, surface, sélection et dialogue ne dépend pas d'une ombre ajoutée.
+**The Light Card Rule.** Les panneaux restent plats et séparés par des filets ; seules les cartes (vignettes, lignes de token, aperçu, réglages de palette), les dialogues et les boutons flottants reçoivent une ombre, toujours légère.
 
 ## Shapes
 
-Des panneaux rectangulaires jointifs, des lignes de sélection légèrement arrondies et des commandes plus douces. Les rayons réutilisables sont ceux du frontmatter : ligne, commande, compositeur et dialogue. Les spécimens sont posés sur une planche presque carrée (2px). Les séparateurs sont des filets de 1px. Les icônes sont des SVG de trait, `viewBox="0 0 24 24"`, sans remplissage, trait 1.6, extrémités arrondies ; leur taille courante est 18px. Elles signalent une commande et ne servent pas d'illustration.
+Des panneaux rectangulaires jointifs, et à l'intérieur des formes très arrondies : boutons, onglets et lignes de navigation en pilule, champs à 12px, cartes à 20px, dialogues à 28px. Les rayons réutilisables sont ceux du frontmatter (`--studio-radius`, `--studio-radius-card`, `--studio-radius-pill`). Les spécimens sont posés sur une planche presque carrée (2px). Les séparateurs sont des filets de 1px. Les icônes sont des SVG de trait, `viewBox="0 0 24 24"`, sans remplissage, trait 1.6, extrémités arrondies ; leur taille courante est 18px. Elles signalent une commande et ne servent pas d'illustration.
 
 ## Components
 
 ### Buttons
 
-Compacts et explicites. Le bouton du chrome mesure au minimum 34px ; la variante principale prend l'iris d'action et du texte blanc, la variante secondaire une surface blanche bordée. Le survol principal utilise l'iris appuyé ; l'état pressé utilise une nuance plus sombre définie localement. La désactivation réduit l'opacité à 0.5 et conserve le libellé. Les commandes de barre sont transparentes sur l'encre violette.
+En pilule et explicites. Le bouton du chrome mesure au minimum 36px ; la variante principale prend l'iris d'action et du texte blanc, la variante secondaire une surface blanche bordée. Le survol principal utilise l'iris appuyé ; l'état pressé utilise une nuance plus sombre définie localement. La désactivation réduit l'opacité à 0.5 et conserve le libellé. Les commandes de barre sont transparentes sur l'encre violette.
 
 Le focus commun est un contour iris (2px), décalé de 2px ; sur l'encre il devient lavande clair. Les transitions de couleur durent 160ms avec `ease-out`, sans déplacement ; elles sont supprimées si le mouvement réduit est demandé.
 
 ### Cards / Containers
 
-Le chrome n'est pas une grille de cartes : navigation, canevas et panneau Modifier se distinguent par leur fond et leurs séparateurs. Exceptions fonctionnelles : les cartes de la vue d'ensemble, dont la vignette est un vrai rendu inerte du composant, et le bouton flottant Modifier, sans ombre, distingué par l'iris d'action. Le compositeur est une exception fonctionnelle : surface blanche, rayon `composer`, contour de commande et espacement `3`. Les cartes visibles dans la planche appartiennent au système édité, pas au chrome.
+Navigation, canevas et panneau Modifier se distinguent par leur fond et leurs filets. Dans le canevas, le contenu est rangé en cartes blanches à ombre légère : vignettes de la vue d'ensemble (vrai rendu inerte du composant), lignes de token, aperçu réglable, réglages et règles du générateur de palettes. Le compositeur : surface blanche, rayon `card`, contour de commande et espacement `3`. Les cartes visibles dans la planche appartiennent au système édité, pas au chrome.
 
 ### Inputs / Fields
 
-Surface blanche, contour de commande, rayon `control`, hauteur minimale 36px. Le survol utilise le contour appuyé et renforce la limite et le focus utilise le contour commun. Les champs de propriété sont à 13px ; les clés et valeurs de token restent en monospace. Le champ de recherche réserve la place d'une icône. Le compositeur laisse sa zone de texte sans second contour interne.
+Surface blanche, contour de commande, rayon `control`, hauteur minimale 36px, retrait horizontal de 14px. Les selects dessinent leur chevron à 14px du bord droit, comme le texte à gauche (12px pour les petits selects des règles de contraste). Le survol utilise le contour appuyé et renforce la limite et le focus utilise le contour commun. Les champs de propriété sont à 13px ; les clés et valeurs de token restent en monospace. Le champ de recherche réserve la place d'une icône. Le compositeur laisse sa zone de texte sans second contour interne.
 
 ### Navigation
 
-Les onglets du canevas ont une casse naturelle, un fond très légèrement lavande à l'état actif et un soulignement iris (2px). Les destinations étroites utilisent lavande de sélection et texte iris. La ligne de token associe nom sémantique, valeur et échantillon ; la sélection est également indiquée par le poids du texte et `aria-pressed`, pas par la couleur seule.
+Sur écran large, les onglets Design / Aperçu n'apparaissent que sur la page d'un composant (sur téléphone, la barre du bas garde Aperçu partout : c'est le seul accès à l'aperçu) ; ils forment un contrôle segmenté en pilule, l'onglet actif prenant l'encre violette et du texte blanc. La barre latérale foncée (décision du 29/10) range Tokens et Composants en sections repliables, puis la Boîte à outils en bas. Les destinations étroites utilisent lavande de sélection et texte iris. La ligne de token associe nom sémantique, valeur et échantillon ; la sélection est également indiquée par le poids du texte et `aria-pressed`, pas par la couleur seule.
 
 ### Proposition specimen
 
@@ -219,8 +219,8 @@ Les chips et cartes Lisière de la planche restent des composants du système é
 ### Don't:
 
 - **Don't** copier la palette initiale de Lisière dans le chrome de DS-Studio.
-- **Don't** ajouter de surtitres décoratifs, de glyphes utilisés comme icônes ou d'illustrations SVG.
+- **Don't** ajouter de surtitres décoratifs ou de glyphes utilisés comme icônes. Les illustrations libres de droits sont décidées (29/10) mais pas encore intégrées.
 - **Don't** inventer une intégration connectée ou transformer une proposition en modification enregistrée.
-- **Don't** ajouter des ombres de cartes ou un défilement global à cette interface plein écran.
+- **Don't** ajouter des ombres marquées ou un défilement global à cette interface plein écran.
 
-La présente extraction décrit `App.tsx`, `styles.css`, `Icon.tsx` et `DesignSystem.tsx`, vérifiés contre les captures finales. Geist est locale et sous OFL ; DM Sans reste un fichier de secours non utilisé. Aucun bitmap généré ou sourcé ne fait partie de l'application livrée. Les rampes OKLCH du sidecar sont des prévisualisations synthétiques du panneau, pas des couleurs supplémentaires implémentées dans l'application. Le skill Impeccable et le rôle documenter ont été lus explicitement ; leur découverte native n'a pas été testée et aucun hook n'a été activé.
+La présente extraction décrit `App.tsx`, `styles.css`, `Icon.tsx` et `DesignSystem.tsx`, vérifiés contre les captures finales. Poppins est locale et sous OFL (`app/client/fonts/Poppins-OFL.txt`) ; DM Sans reste un fichier de secours non utilisé. Aucun bitmap généré ou sourcé ne fait partie de l'application livrée. Les rampes OKLCH du sidecar sont des prévisualisations synthétiques du panneau, pas des couleurs supplémentaires implémentées dans l'application. Le skill Impeccable et le rôle documenter ont été lus explicitement ; leur découverte native n'a pas été testée et aucun hook n'a été activé.

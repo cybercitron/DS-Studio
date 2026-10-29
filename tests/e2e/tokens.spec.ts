@@ -59,7 +59,7 @@ test('ajout et suppression de tokens : diff, rechargement, annulation, alerte', 
   const removed = await state();
   expect(removed.tokens['color.success']).toBeUndefined();
   await page
-    .locator('#ds-panel .nav-item', { hasText: 'Vue d’ensemble' })
+    .locator('#ds-panel .nav-section-title', { hasText: 'Composants' })
     .click();
   expect(
     await page

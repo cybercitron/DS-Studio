@@ -96,6 +96,8 @@ test('largeurs réelles, interactions, formulaire et desktop responsive', async 
 }) => {
   await page.goto('/');
   const frame = page.frameLocator('iframe');
+  // Les onglets Design / Aperçu n'existent que sur la page d'un composant.
+  await openComponent(page, 'Bouton');
   await page
     .locator('.canvas-tabs')
     .getByRole('button', { name: 'Aperçu', exact: true })

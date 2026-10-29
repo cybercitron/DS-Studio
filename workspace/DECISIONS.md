@@ -204,3 +204,59 @@ locaux validés. Claude et Gemini ne sont pas activés sans qualification.
 - **Limite connue** : pas encore de mode sombre ni d'ajout comme tokens. Au-delà
   du 200 et du 800, le décalage reste plafonné à 12°. Les jaunes foncés gardent
   une pointe kaki au réglage par défaut. Le jugement esthétique reste le mien.
+
+## 2026-10-29 — Nouvelle structure de la barre latérale
+
+- **Problème** : la barre latérale mélange une entrée « Vue d'ensemble » et les
+  listes ; le générateur de palettes est un bouton isolé dans la barre du haut ;
+  rien n'annonce les outils à venir.
+- **Options explorées** : pour les sections repliables, (A) une flèche pour
+  replier et le titre pour ouvrir la page de vue d'ensemble, ou (B) un seul clic
+  pour les deux ; garder ou retirer le bouton Palette de la barre du haut.
+- **Décision** :
+  - Barre latérale foncée, de la même couleur que la barre du haut.
+  - Recherche (composants et tokens) conservée en haut.
+  - Deux sections repliables : **Tokens** (Couleurs, Typographie, Espacements,
+    Rayons) et **Composants** (liste des composants créés). Option A : la flèche
+    replie ou déplie ; le titre ouvre une page de vue d'ensemble (toutes les
+    familles de tokens pour Tokens, tous les composants pour Composants).
+  - L'entrée « Vue d'ensemble » disparaît de la liste.
+  - Ouvertes au premier lancement, puis l'outil se souvient de mon choix.
+  - En bas, une section **Boîte à outils** : Créateur de palettes, et Générateur
+    de composants avec un badge « WIP », impossible à cliquer (« Bientôt
+    disponible » au survol, annoncé comme désactivé aux lecteurs d'écran).
+  - Le bouton Palette est retiré de la barre du haut. Cela remplace l'emplacement
+    prévu dans la décision du 28/10 sur le générateur de palettes.
+- **Raison** : un plan à la Figma et Storybook, où un clic ne fait qu'une chose ;
+  un seul chemin vers chaque outil ; la Boîte à outils annonce la suite.
+- **Preuve attendue** : capture de la barre ; repli, dépli et pages de vue
+  d'ensemble testés à la souris et au clavier ; état retrouvé après rechargement ;
+  générateur WIP non cliquable ; textes de la barre foncée vérifiés à 4,5:1
+  (élément sélectionné, compteurs et badge compris).
+- **Limite connue** : les familles de tokens restent les quatre actuelles.
+
+## 2026-10-29 — Refonte visuelle de l'atelier, inspirée d'eBay Playbook
+
+- **Problème** : l'habillage de DS-Studio paraît daté et anguleux. Je le veux plus
+  moderne et épuré. Cela concerne l'atelier, pas les composants du DS Cartel.
+- **Options explorées** : arrondis doux (8 à 12 px) ou très marqués ; séparations
+  par bordures fines ou par cartes sur fond gris ; police Nunito, DM Sans,
+  Quicksand ou Poppins ; un seul chantier ou deux.
+- **Décision** :
+  - Ce que je reprends de Playbook : arrondis **très marqués**, boutons en
+    pilule, illustrations, gros titres, cartes aux ombres légères. Inspiration
+    seulement : ni police, ni logo, ni couleurs d'eBay.
+  - Zones de l'atelier séparées par des bordures fines.
+  - Police : **Poppins** à essayer à la place de Geist, installée localement
+    (licence libre OFL).
+  - Illustrations libres de droits (par exemple unDraw) dans les états vides, en
+    tête des pages de vue d'ensemble et dans la Boîte à outils.
+  - Deux chantiers : d'abord la nouvelle barre latérale, directement dans ce
+    style ; ensuite le reste de l'atelier.
+- **Raison** : un atelier plus agréable et plus actuel, cohérent avec un outil
+  d'aide à la création ; la barre latérale n'est pas refaite deux fois.
+- **Preuve attendue** : captures avant / après ; textes et boutons vérifiés à
+  4,5:1 ; focus clavier visible sur les nouveaux boutons pilule ; atelier toujours
+  utilisable sans Internet ; licence de chaque illustration vérifiée et notée.
+- **Limite connue** : « très marqués » et Poppins sont à tester ; on ajustera si
+  cela gêne la densité des listes. Le style reste un jugement personnel.

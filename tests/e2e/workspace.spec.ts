@@ -84,6 +84,8 @@ test('scroll strictement local et viewport réel : largeur desktop accessible sa
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
+  // Les onglets Design / Aperçu n'existent que sur la page d'un composant.
+  await openComponent(page, 'Bouton');
   await page
     .locator('.canvas-tabs')
     .getByRole('button', { name: 'Aperçu', exact: true })

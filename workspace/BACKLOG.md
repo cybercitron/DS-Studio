@@ -10,6 +10,23 @@ Idées de features et tâches à venir. Les décisions tranchées vont dans DECI
   1) bouton flottant et panneau Modifier ; 2) barre de gauche façon Storybook ;
   3) onglet Design avec une page par composant ; 4) onglet Accessibilité.
 
+- **Refonte de l'atelier** (décisions du 29/10 : barre latérale et style Playbook).
+  1) [x] Nouvelle barre latérale, déjà dans le nouveau style (fait le 29/10) :
+     barre foncée, sections Tokens et Composants repliables (la flèche replie,
+     le titre ouvre la vue d'ensemble), choix retenu sur ce poste, Boîte à outils
+     (Créateur de palettes ; Générateur de composants WIP, inactif). Testé à la
+     souris et au clavier ; textes de la barre entre 6:1 et 13,5:1.
+     Police Poppins (OFL, `app/client/fonts/`) à la place de Geist : validée sur
+     capture le 29/10 ; Geist retirée du dossier.
+  2) [x] Reste de l'atelier dans le même style (fait le 29/10) : boutons et
+     onglets en pilule, champs à 12 px, cartes à 20 px avec ombre légère,
+     dialogues à 28 px, titres de page à 30 px. Composants du DS inchangés.
+     Testé : 4 vérifications, focus clavier visible sur les pilules.
+     Limite : les bordures fines des boutons secondaires restent pâles (1,3:1),
+     comme avant ; leur libellé suffit à les identifier.
+  3) [ ] Illustrations libres de droits (états vides, vues d'ensemble, Boîte à
+     outils), licence de chacune vérifiée et notée. Mises de côté le 29/10.
+
 - **Vérificateur de contrastes** : tableau qui teste toutes les paires de couleurs
   du DS (texte, boutons, états survol, focus, désactivé, erreur) et signale celles
   sous 4,5:1 (texte courant) ou 3:1 (grand texte).
@@ -36,10 +53,12 @@ Idées de features et tâches à venir. Les décisions tranchées vont dans DECI
 
 - **Générateur de palettes accessibles** (voir les décisions du 28/10 et du 29/10).
   1) [x] Générer, ajuster et exporter une palette à partir d'une teinte hex
-     (fait le 29/10 : bouton « Palette » de la barre du haut, testé) ;
+     (fait le 29/10, testé ; ouvert depuis la Boîte à outils) ;
   2) [ ] bouton « Ajouter comme tokens primitives », via le diff ;
   3) [ ] mode sombre : seconde échelle avec les mêmes règles.
   L'ajout de tokens est fait (29/10) : l'étape 2 est débloquée.
+  Emplacement : Boîte à outils de la barre latérale (le bouton de la barre du
+  haut a été retiré le 29/10).
 
 ### Priorité moyenne
 
@@ -53,6 +72,14 @@ Idées de features et tâches à venir. Les décisions tranchées vont dans DECI
   du CAPC. Dépend des alias.
 
 ### Priorité basse — pistes d'amélioration
+
+- **Générateur de composants** : choisir un type (bouton, select, card…), cocher
+  ses propriétés d'après les bonnes pratiques et l'anatomie courante, avec les
+  tokens de DS-Studio ; puis export vers Figma et retour des modifications.
+  Pistes : étapes (recettes, configurateur pour un seul type, test d'un plugin
+  Figma sur le fichier de test, retour limité aux modifications prévues).
+  Question ouverte : qui est la source de vérité, DS-Studio ou Figma ?
+  Visible dans la Boîte à outils avec un badge WIP.
 
 - **Remplacer l'agent intégré (Codex) par Claude**.
   Limite : à tester avant de l'annoncer, Claude est aujourd'hui marqué non implémenté.

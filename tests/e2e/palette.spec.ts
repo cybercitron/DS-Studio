@@ -6,7 +6,8 @@ test('générateur de palettes : jaune vif, règle impossible, retouche, export'
 }) => {
   await page.goto('/');
   const before = (await page.request.get('/api/state')).json();
-  await page.getByRole('button', { name: 'Palette' }).click();
+  // Le générateur s'ouvre depuis la Boîte à outils de la barre latérale.
+  await page.getByRole('button', { name: 'Créateur de palettes' }).click();
   const view = page.locator('#palette-view');
   await expect(
     view.getByRole('heading', { name: 'Générateur de palettes accessibles' }),
